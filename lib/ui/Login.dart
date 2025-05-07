@@ -49,6 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       passwordController,
                       fieldErrors
                   ),
+
                   Botoniniciosesion().getBotoniniciosesion(fieldErrors, userBloc, usrController, passwordController),
                 ],
               ),
