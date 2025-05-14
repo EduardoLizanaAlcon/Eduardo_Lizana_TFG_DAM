@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../ui/Registro.dart';
 import 'TextFieldBlanco.dart';
 import 'TextFieldNumeroTelefono.dart';
 import 'TextSubtitulo.dart';
@@ -63,7 +64,12 @@ class Contenedorlogincard {
 
             SizedBox(height: 50),
             GestureDetector(
-              onTap: () =>{},
+              onTap: () =>{
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => RegisterScreen()),
+                )
+              },
               child: const Text(
                 "¿No tienes cuenta?",
                 style: TextStyle(

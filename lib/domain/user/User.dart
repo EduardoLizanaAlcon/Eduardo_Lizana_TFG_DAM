@@ -5,13 +5,15 @@
 import 'dart:convert';
 
 LoginResponse loginResponseFromJson(String str) => LoginResponse.fromJson(json.decode(str));
-
 String loginResponseToJson(LoginResponse data) => json.encode(data.toJson());
+
+RegisterResponse registerResponseFromJson(String str) => RegisterResponse.fromJson(json.decode(str));
+String registerResponseToJson(RegisterResponse data) => json.encode(data.toJson());
 
 class LoginResponse {
   bool success;
   String mensaje;
-  Usuario usuario;
+  Usuario? usuario;
 
   LoginResponse({
     required this.success,
@@ -28,7 +30,31 @@ class LoginResponse {
   Map<String, dynamic> toJson() => {
     "success": success,
     "mensaje": mensaje,
-    "usuario": usuario.toJson(),
+    "usuario": usuario?.toJson(),
+  };
+}
+
+class RegisterResponse {
+  bool? success;
+  String? mensaje;
+  Usuario? usuario;
+
+  RegisterResponse({
+    this.success,
+    this.mensaje,
+    this.usuario,
+  });
+
+  factory RegisterResponse.fromJson(Map<String, dynamic> json) => RegisterResponse(
+    success: json["success"],
+    mensaje: json["mensaje"],
+    usuario: json["usuario"] == null ? null : Usuario.fromJson(json["usuario"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "success": success,
+    "mensaje": mensaje,
+    "usuario": usuario?.toJson(),
   };
 }
 

@@ -3,21 +3,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injector/injector.dart';
-import 'package:tfg_ginyote/domain/user/User.dart';
-import 'package:tfg_ginyote/ui/PaginaInicio.dart';
 import '../bloc/user/user_bloc.dart';
-import '../components/generics/BotonInicioSesion.dart';
-import '../components/generics/ContenedorLoginCard.dart';
-import '../util/UsuarioDatos.dart';
+import '../components/generics/BotonRegistro.dart';
+import '../components/generics/ContenedorRegistroCard.dart';
 
-class LoginScreen extends StatefulWidget {
+class RegisterScreen extends StatefulWidget {
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _RegisterScreenState createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController usrController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController nombreController = TextEditingController();
+  final TextEditingController apellidoController = TextEditingController();
+  final TextEditingController telefonoController = TextEditingController();
   final UserBloc userBloc = Injector.appInstance.get<UserBloc>();
   bool isLoading = false;
 
@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
         create: (_) => userBloc,
         child: BlocListener<UserBloc, UserState>(
           listener: (context, state) {
-            if (state is LoadingLoginState) {
+            if (state is LoadingRegisterState) {
               setState(() {
                 isLoading = true;
               });
@@ -40,18 +40,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 isLoading = false;
               });
             }
-
-            if (state is ErrorLoginState) {
-              print("Login error");
-            } else if (state is LoginState) {
-              UsuarioDatos.setUsuario(state.loginResponse.usuario!);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Paginainicio()),
-              );
+            if (state is ErrorState) {
+              print("Registro fallido");
+            } else if (state is RegistroState) {
+              Navigator.pop(context);
             }
           },
-
           child: Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -59,14 +53,23 @@ class _LoginScreenState extends State<LoginScreen> {
                 alignment: Alignment.bottomCenter,
                 clipBehavior: Clip.none,
                 children: [
-                  Contenedorlogincard().getCard_Login(
+                  ContenedorRegistroCard().getCard_Registro(
                     context,
                     usrController,
                     passwordController,
+                    nombreController,
+                    apellidoController,
+                    telefonoController,
                     fieldErrors,
                   ),
-                  Botoniniciosesion().getBotoniniciosesion(
-                    fieldErrors, userBloc, usrController, passwordController,
+                  BotonRegistro().getBotonRegistro(
+                    fieldErrors,
+                    userBloc,
+                    usrController,
+                    passwordController,
+                    nombreController,
+                    apellidoController,
+                    telefonoController,
                   ),
                   if (isLoading)
                     Positioned.fill(
@@ -77,7 +80,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                 ],
               ),
-
             ),
           ),
         ),
