@@ -8,7 +8,7 @@ class VerGlobalUserCase{
   PartidaRepository _partidaRepository;
   VerGlobalUserCase(this._partidaRepository);
   Future<BuscarpartidaResponse?> postVerGlobal(VerGlobal global) async{
-    final response = await _partidaRepository.postVerGlobal(global);
-    return response;
+    // final response = await _partidaRepository.postVerGlobal(global);
+    return null;
   }
 }

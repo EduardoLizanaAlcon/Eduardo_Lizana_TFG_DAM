@@ -53,7 +53,7 @@ class InformacionCreada {
   String equipo1;
   String equipo2;
   String idBaraja;
-  String idPartida;
+  int idPartida;
 
   InformacionCreada({
     required this.success,

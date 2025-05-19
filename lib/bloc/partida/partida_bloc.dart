@@ -4,10 +4,19 @@ import 'package:tfg_ginyote/domain/partida/BuscarpartidaResponse.dart';
 import 'package:tfg_ginyote/domain/partida/EnviarBuscarPartida.dart';
 import 'package:tfg_ginyote/domain/partida/VerMano.dart';
 import 'package:tfg_ginyote/domain/partida/VerTriunfoResponse.dart';
+import 'package:tfg_ginyote/use-cases/partida/JugarManoUseCase.dart';
+import '../../domain/partida/CartaJugadaRival.dart';
+import '../../domain/partida/CartaJugadaRivalResponse.dart';
+import '../../domain/partida/JugarCarta.dart';
+import '../../domain/partida/JugarCartaResponse.dart';
 import '../../domain/partida/VerGlobal.dart';
 import '../../domain/partida/VerManoResponse.dart';
 import '../../domain/partida/VerTriunfo.dart';
 import '../../use-cases/partida/BuscarPartidaUserCase.dart';
+import '../../use-cases/partida/Cantar20UseCase.dart';
+import '../../use-cases/partida/Cantar40UseCase.dart';
+import '../../use-cases/partida/CartaJugadaRivalUseCase.dart';
+import '../../use-cases/partida/SiguienteJugadorUseCase.dart';
 import '../../use-cases/partida/VerGlobalUserCase.dart';
 import '../../use-cases/partida/VerManoUserCase.dart';
 import '../../use-cases/partida/VerTriunfoUserCase.dart';
@@ -19,8 +28,23 @@ class PartidaBloc extends Bloc<PartidaEvent, PartidaState> {
   VerManoUserCase? _verManoUserCasa;
   VerTriunfoUserCase? _verTriunfoUserCase;
   VerGlobalUserCase? _verGlobalUserCase;
+  JugarManoUseCase? _jugarManoUseCase;
+  SiguienteJugadorUseCase? _siguienteJugadorUseCase;
+  Cantar20UseCase? _cantar20UseCase;
+  Cantar40UseCase? _cantar40UseCase;
+  CartaJugadaRivalUseCase? _cartaJugadaRivalUseCase;
 
-  PartidaBloc(this._buscarPartidaUserCase, this._verManoUserCasa, this._verTriunfoUserCase, this._verGlobalUserCase) : super(UserInitial()) {
+  PartidaBloc(
+      this._buscarPartidaUserCase,
+      this._verManoUserCasa,
+      this._verTriunfoUserCase,
+      this._verGlobalUserCase,
+      this._siguienteJugadorUseCase,
+      this._jugarManoUseCase,
+      this._cantar20UseCase,
+      this._cantar40UseCase,
+      this._cartaJugadaRivalUseCase,
+    ) : super(UserInitial()) {
     on<postBuscarPartidaEvent>((event, emit) async{
       final response = await _buscarPartidaUserCase!.postBuscarPartida(event.buscador);
 
@@ -55,6 +79,48 @@ class PartidaBloc extends Bloc<PartidaEvent, PartidaState> {
         emit(BuscadorLoadingState(response));
       }
     });
+    on<ObtenerSiguienteJugadorEvent>((event, emit) async{
+      final response = await _siguienteJugadorUseCase!.postSiguienteJugador(event.idPartida);
+      if (response!.success) {
+        emit(SiguienteJugadorLoadedState(siguienteJugador: '${response.siguienteJugador}'));
+      }else{
+        // emit(BuscadorLoadingState(response));
+      }
+    });
+    on<JugarCartaEvent>((event, emit) async{
+      emit(EsperandoRespuestaState());
+      final response = await _jugarManoUseCase!.postJugarCarta(event.cartaJugada);
+      if (response!.success) {
+        emit(JugarCartaLoadedState(response));
+      }else{
+        emit(JugarCartaLoadingState(response));
+      }
+    });
+    on<CartaJugadaRivalEvent>((event, emit) async{
+      final response = await _cartaJugadaRivalUseCase!.postVerCartaJugadaRival(event.BuscarCarta);
+      if (response!.success) {
+        emit(CartaJugadaRivalLoadedState(response));
+      }else{
+        emit(CartaJugadaRivalLoadingState(response));
+      }
+    });
+    // on<Cantar20Event>((event, emit) async{
+    //   final response = await _verGlobalUserCase!.postVerGlobal(event.global);
+    //   if (response!.success) {
+    //     emit(BuscarPartidaLoadedState(response));
+    //   }else{
+    //     emit(BuscadorLoadingState(response));
+    //   }
+    // });
+    // on<Cantar40Event>((event, emit) async{
+    //   final response = await _verGlobalUserCase!.postVerGlobal(event.global);
+    //   if (response!.success) {
+    //     emit(BuscarPartidaLoadedState(response));
+    //   }else{
+    //     emit(BuscadorLoadingState(response));
+    //   }
+    // });
+
   }
 }
 

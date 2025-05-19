@@ -33,7 +33,7 @@ dependencies:
   intl_phone_field: ^3.2.0
   flutter_bloc: ^8.1.3
   injector: ^3.0.0
-  http: ^0.13.6  # o la última versión disponible
+  http: ^0.13.6
 
 
 dev_dependencies:
