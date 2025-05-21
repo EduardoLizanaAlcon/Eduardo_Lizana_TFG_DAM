@@ -75,6 +75,7 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
     return false;
   }
 
+
   int cartaComparator(Carta a, Carta b) {
     const orden = ['ACE', '3', 'KING', 'QUEEN', 'JACK', '7', '6', '5', '4', '2'];
     return orden.indexOf(a.value).compareTo(orden.indexOf(b.value));
