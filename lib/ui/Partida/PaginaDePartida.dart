@@ -81,6 +81,7 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
     return orden.indexOf(a.value).compareTo(orden.indexOf(b.value));
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
