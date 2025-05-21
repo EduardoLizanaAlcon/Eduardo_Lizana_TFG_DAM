@@ -153,7 +153,8 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
             bloc: partidaBloc,
             listenWhen: (prev, current) => current is CartaJugadaRivalLoadedState,
             listener: (context, state) {
-              if (state is CartaJugadaRivalLoadedState && state.repuestaCartaRivalJugada.success) {
+              if (state is CartaJugadaRivalLoadedState &&
+                  state.repuestaCartaRivalJugada.success) {
                 final cartasRival = state.repuestaCartaRivalJugada.cartasRival;
                 if (cartasRival != null && cartasRival.isNotEmpty) {
                   final carta = cartasRival.first;
@@ -185,10 +186,16 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(gane ? '¡Has ganado la ronda!' : 'Has perdido la ronda'),
+                      content:
+                      Text(gane ? '¡Has ganado la ronda!' : 'Has perdido la ronda'),
                       duration: const Duration(seconds: 2),
                     ),
                   );
+
+                  partidaBloc.add(postVerMano(VerMano(
+                    idBaraja: widget.idPartida,
+                    idJugador: usu.id,
+                  )));
 
                   setState(() {
                     cartasJugadas.clear();
@@ -197,7 +204,8 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
 
                     if (!esMiTurno && _timer == null) {
                       _timer = Timer.periodic(const Duration(seconds: 2), (_) {
-                        partidaBloc.add(ObtenerSiguienteJugadorEvent(idPartida: widget.idPartida));
+                        partidaBloc.add(ObtenerSiguienteJugadorEvent(
+                            idPartida: widget.idPartida));
                       });
                     }
 
@@ -329,7 +337,6 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
                           ),
                         );
                         setState(() {
-                          cartasJugadas.add(cartaSeleccionada);
                           misCartas.removeAt(selectedCardIndices.first);
                           selectedCardIndices.clear();
                           esMiTurno = false;
