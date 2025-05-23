@@ -16,6 +16,7 @@ import '../../use-cases/partida/BuscarPartidaUserCase.dart';
 import '../../use-cases/partida/Cantar20UseCase.dart';
 import '../../use-cases/partida/Cantar40UseCase.dart';
 import '../../use-cases/partida/CartaJugadaRivalUseCase.dart';
+import '../../use-cases/partida/ComprobarGanadorUseCase.dart';
 import '../../use-cases/partida/SiguienteJugadorUseCase.dart';
 import '../../use-cases/partida/VerGlobalUserCase.dart';
 import '../../use-cases/partida/VerManoUserCase.dart';
@@ -33,6 +34,7 @@ class PartidaBloc extends Bloc<PartidaEvent, PartidaState> {
   Cantar20UseCase? _cantar20UseCase;
   Cantar40UseCase? _cantar40UseCase;
   CartaJugadaRivalUseCase? _cartaJugadaRivalUseCase;
+  ComprobarGanadorUseCase? _comprobarGanadorUseCase;
 
   PartidaBloc(
       this._buscarPartidaUserCase,
@@ -104,6 +106,16 @@ class PartidaBloc extends Bloc<PartidaEvent, PartidaState> {
         emit(CartaJugadaRivalLoadingState(response));
       }
     });
+    on<ComprobarGanadorEvent>((event, emit) async{
+      final response = await _comprobarGanadorUseCase!.postComprobarRonda(event.BuscarCarta);
+
+      if (response!.success) {
+        emit(ComprobarGanadorLoadedState(haGanado: true));
+      }else{
+        emit(ComprobarGanadorLoadedState(haGanado: false));
+      }
+    });
+
     // on<Cantar20Event>((event, emit) async{
     //   final response = await _verGlobalUserCase!.postVerGlobal(event.global);
     //   if (response!.success) {

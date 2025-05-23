@@ -44,6 +44,12 @@ class CartaJugadaRivalEvent extends PartidaEvent {
   });
 }
 
+class ComprobarGanadorEvent extends PartidaEvent {
+  final CartaJugadaRival BuscarCarta;
+
+
+  ComprobarGanadorEvent({required this.BuscarCarta});
+}
 
 class Cantar20Event extends PartidaEvent {
   final String idPartida;

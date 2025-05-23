@@ -121,8 +121,28 @@ class PartidaService {
   }
 
   Future<JugarCartaResponse?> jugarCarta(
-    JugarCarta cartaJugada
-  ) async {
+      JugarCarta cartaJugada
+      ) async {
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      final response = await apiClient.post(
+        '${Entorno().getEntorno()}PartidaControlador/JugarCarta',
+        headers,
+        jugarCartaToJson(cartaJugada),
+      );
+      return jugarCartaResponseFromJson(response);
+    } catch (e) {
+      print('Error al jugar carta: $e');
+      return null;
+    }
+  }
+
+  Future<JugarCartaResponse?> postComprobarRondaService(
+      CartaJugadaRival cartaJugada
+      ) async {
     try {
       final headers = {
         'Content-Type': 'application/json',

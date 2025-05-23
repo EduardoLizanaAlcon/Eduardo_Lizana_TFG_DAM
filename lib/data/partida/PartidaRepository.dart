@@ -22,6 +22,7 @@ class PartidaRepository {
   Future<SiguienteJugadorResponse?> obtenerSiguienteJugador(String idPartida) async => await _PartidaService.obtenerSiguienteJugador(idPartida);
   Future<JugarCartaResponse?> jugarCarta(JugarCarta cartJugada ) async => await _PartidaService.jugarCarta(cartJugada);
   Future<CartaJugadaRivalResponse?> VerCartaJugadaRival(CartaJugadaRival cartrivJugada) async => await _PartidaService.postVerCartaJugadaRival(cartrivJugada);
+  Future<CartaJugadaRivalResponse?> ComprobarRonda(CartaJugadaRival cartrivJugada) async => await _PartidaService.postComprobarRondaService(cartrivJugada);
 
   // Future<Map<String, dynamic>?> cantar20({
   //   required String idPartida,

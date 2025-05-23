@@ -54,6 +54,12 @@ class ErrorVerTriunfoState extends PartidaState {
   ErrorVerTriunfoState(this.VerTriunfo);
 }
 
+class ComprobarGanadorLoadedState extends PartidaState {
+  final bool haGanado;
+
+  ComprobarGanadorLoadedState({required this.haGanado});
+}
+
 class SiguienteJugadorLoadedState extends PartidaState {
   final String siguienteJugador;
   SiguienteJugadorLoadedState({required this.siguienteJugador});

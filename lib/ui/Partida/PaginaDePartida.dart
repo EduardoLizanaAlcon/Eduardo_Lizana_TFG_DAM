@@ -32,6 +32,8 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
   String? siguienteJugador;
   bool esMiTurno = false;
   Timer? _timer;
+  Timer? _timerGanador;
+  String? _ultimaCartaJugada;
 
   @override
   void initState() {
@@ -44,6 +46,7 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
   @override
   void dispose() {
     _timer?.cancel();
+    _timerGanador?.cancel();
     super.dispose();
   }
 
@@ -75,12 +78,10 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
     return false;
   }
 
-
   int cartaComparator(Carta a, Carta b) {
     const orden = ['ACE', '3', 'KING', 'QUEEN', 'JACK', '7', '6', '5', '4', '2'];
     return orden.indexOf(a.value).compareTo(orden.indexOf(b.value));
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -139,8 +140,7 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
           ),
           BlocListener<PartidaBloc, PartidaState>(
             bloc: partidaBloc,
-            listenWhen: (prev, current) =>
-            current is VerTriunfoLoadedState || current is ErrorVerTriunfoState,
+            listenWhen: (prev, current) => current is VerTriunfoLoadedState || current is ErrorVerTriunfoState,
             listener: (context, state) {
               if (state is VerTriunfoLoadedState) {
                 setState(() {
@@ -188,8 +188,7 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content:
-                      Text(gane ? '¡Has ganado la ronda!' : 'Has perdido la ronda'),
+                      content: Text(gane ? '¡Has ganado la ronda!' : 'Has perdido la ronda'),
                       duration: const Duration(seconds: 2),
                     ),
                   );
@@ -206,8 +205,7 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
 
                     if (!esMiTurno && _timer == null) {
                       _timer = Timer.periodic(const Duration(seconds: 2), (_) {
-                        partidaBloc.add(ObtenerSiguienteJugadorEvent(
-                            idPartida: widget.idPartida));
+                        partidaBloc.add(ObtenerSiguienteJugadorEvent(idPartida: widget.idPartida));
                       });
                     }
 
@@ -328,6 +326,8 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
                       onPressed: (esMiTurno && puedeJugarCarta && siguienteJugador != null)
                           ? () {
                         final cartaSeleccionada = misCartas[selectedCardIndices.first];
+                        _ultimaCartaJugada = cartaSeleccionada.code;
+
                         partidaBloc.add(
                           JugarCartaEvent(
                             cartaJugada: JugarCarta(
@@ -338,6 +338,14 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
                             ),
                           ),
                         );
+
+                        _timerGanador?.cancel();
+                        _timerGanador = Timer.periodic(const Duration(seconds: 2), (_) {
+                          partidaBloc.add(ComprobarGanadorEvent(
+                            BuscarCarta: CartaJugadaRival(idJugador: "${usu.id}", idBaraja: widget.idPartida)
+                          ));
+                        });
+
                         setState(() {
                           misCartas.removeAt(selectedCardIndices.first);
                           selectedCardIndices.clear();
