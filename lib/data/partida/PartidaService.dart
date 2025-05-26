@@ -10,6 +10,8 @@ import "package:tfg_ginyote/domain/partida/VerTriunfoResponse.dart";
 
 import "../../domain/partida/BuscarpartidaResponse.dart";
 import "../../domain/partida/CartaJugadaRivalResponse.dart";
+import "../../domain/partida/ComprobarRonda.dart";
+import "../../domain/partida/ComprobarRondaResponse.dart";
 import "../../domain/partida/EnviarBuscarPartida.dart";
 import "../../domain/partida/JugarCartaResponse.dart";
 import "../../domain/partida/SiguienteJugadorResponse.dart";
@@ -140,8 +142,8 @@ class PartidaService {
     }
   }
 
-  Future<JugarCartaResponse?> postComprobarRondaService(
-      CartaJugadaRival cartaJugada
+  Future<ComprobarRondaResponse?> postComprobarRondaService(
+      ComprobarRonda compRonda
       ) async {
     try {
       final headers = {
@@ -149,11 +151,11 @@ class PartidaService {
         'Accept': 'application/json',
       };
       final response = await apiClient.post(
-        '${Entorno().getEntorno()}PartidaControlador/JugarCarta',
+        '${Entorno().getEntorno()}PartidaControlador/ObtenerGanador',
         headers,
-        jugarCartaToJson(cartaJugada),
+        ComprobarRondaToJson(compRonda),
       );
-      return jugarCartaResponseFromJson(response);
+      return comprobarRondaResponseFromJson(response);
     } catch (e) {
       print('Error al jugar carta: $e');
       return null;

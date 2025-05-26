@@ -62,28 +62,75 @@ class _Paginainiciostate extends State<Paginainicio> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    print("1º opción");
-                  },
-                  child: Text("Perfil"),
+                SizedBox(
+                  height: 300,
+                  width: 300, // botón más ancho para "Buscar"
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          topRight: Radius.circular(20),
+                          bottomLeft: Radius.circular(12),
+                          bottomRight: Radius.circular(16),
+                        ),
+                      ),
+                    ),
+                    onPressed: () {
+                      partidaBloc.add(postBuscarPartidaEvent(BuscarPartida(id_usuario: usu.id)));
+                    },
+                    child: Text("BUSCAR PARTIDA"),
+                  ),
                 ),
                 SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    partidaBloc.add(postBuscarPartidaEvent(BuscarPartida(id_usuario: usu.id)));
-                  },
-                  child: Text("Buscar Partida"),
-                ),
-                SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Contprincipalhistorial()),
-                    );
-                  },
-                  child: Text("Historial"),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 200,
+                      width: 140, // botón más pequeño para "PER"
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(12),
+                              topRight: Radius.circular(6),
+                              bottomLeft: Radius.circular(20),
+                              bottomRight: Radius.circular(8),
+                            ),
+                          ),
+                        ),
+                        onPressed: () {
+                          print("1º opción");
+                        },
+                        child: Text("PERFIL"),
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    SizedBox(
+                      height: 200,
+                      width: 140, // botón pequeño para "HIS"
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              topRight: Radius.circular(15),
+                              bottomLeft: Radius.circular(8),
+                              bottomRight: Radius.circular(12),
+                            ),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Contprincipalhistorial()),
+                          );
+                        },
+                        child: Text("HISTORIAL"),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:injector/injector.dart';
 import 'package:tfg_ginyote/bloc/historial/historial_bloc.dart';
 import 'package:tfg_ginyote/bloc/partida/partida_bloc.dart';
+import 'package:tfg_ginyote/domain/partida/ComprobarRonda.dart';
 import 'package:tfg_ginyote/use-cases/partida/BuscarPartidaUserCase.dart';
 import 'package:tfg_ginyote/use-cases/partida/CartaJugadaRivalUseCase.dart';
 import 'package:tfg_ginyote/use-cases/partida/SiguienteJugadorUseCase.dart';
@@ -20,6 +21,7 @@ import '../data/user/LoginService.dart';
 import '../use-cases/historico/ObtenerHistoricoUserCase.dart';
 import '../use-cases/partida/Cantar20UseCase.dart';
 import '../use-cases/partida/Cantar40UseCase.dart';
+import '../use-cases/partida/ComprobarGanadorUseCase.dart';
 import '../use-cases/partida/JugarManoUseCase.dart';
 import '../use-cases/partida/VerTriunfoUserCase.dart';
 import '../use-cases/user/LoginUserCase.dart';
@@ -42,6 +44,7 @@ void setupDI() {
       injector.get<Cantar20UseCase>(),
       injector.get<Cantar40UseCase>(),
       injector.get<CartaJugadaRivalUseCase>(),
+      injector.get<ComprobarGanadorUseCase>(),
   ));
 
   //inyeccion de login
@@ -67,5 +70,6 @@ void setupDI() {
   injector.registerSingleton<Cantar20UseCase>(() => Cantar20UseCase(injector.get<PartidaRepository>()));
   injector.registerSingleton<Cantar40UseCase>(() => Cantar40UseCase(injector.get<PartidaRepository>()));
   injector.registerSingleton<CartaJugadaRivalUseCase>(() => CartaJugadaRivalUseCase(injector.get<PartidaRepository>()));
+  injector.registerSingleton<ComprobarGanadorUseCase>(() => ComprobarGanadorUseCase(injector.get<PartidaRepository>()));
 
 }

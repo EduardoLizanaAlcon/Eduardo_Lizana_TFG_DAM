@@ -9,6 +9,7 @@ import 'package:tfg_ginyote/domain/user/User.dart';
 import 'package:tfg_ginyote/util/UsuarioDatos.dart';
 import '../../domain/partida/Carta.dart';
 import '../../domain/partida/CartaJugadaRival.dart';
+import '../../domain/partida/ComprobarRonda.dart';
 import '../../domain/partida/VerMano.dart';
 import '../../domain/partida/VerTriunfoResponse.dart';
 
@@ -155,8 +156,7 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
             bloc: partidaBloc,
             listenWhen: (prev, current) => current is CartaJugadaRivalLoadedState,
             listener: (context, state) {
-              if (state is CartaJugadaRivalLoadedState &&
-                  state.repuestaCartaRivalJugada.success) {
+              if (state is CartaJugadaRivalLoadedState && state.repuestaCartaRivalJugada.success) {
                 final cartasRival = state.repuestaCartaRivalJugada.cartasRival;
                 if (cartasRival != null && cartasRival.isNotEmpty) {
                   final carta = cartasRival.first;
@@ -197,26 +197,47 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
                     idBaraja: widget.idPartida,
                     idJugador: usu.id,
                   )));
-
+                  partidaBloc.add(ObtenerSiguienteJugadorEvent(idPartida: widget.idPartida));
                   setState(() {
                     cartasJugadas.clear();
-                    siguienteJugador = infoGanador.siguienteJugador.toString();
-                    esMiTurno = (siguienteJugador == "${usu.id}");
-
-                    if (!esMiTurno && _timer == null) {
-                      _timer = Timer.periodic(const Duration(seconds: 2), (_) {
-                        partidaBloc.add(ObtenerSiguienteJugadorEvent(idPartida: widget.idPartida));
-                      });
-                    }
-
-                    if (esMiTurno && _timer != null) {
-                      _timer?.cancel();
-                      _timer = null;
-                    }
+                  });
+                } else {
+                  _timerGanador?.cancel();
+                  _timerGanador = Timer.periodic(const Duration(seconds: 2), (_) {
+                    partidaBloc.add(ComprobarGanadorEvent(
+                      comprobarRonda: ComprobarRonda(
+                        idCarta: _ultimaCartaJugada!,
+                        idBaraja: widget.idPartida,
+                      ),
+                    ));
                   });
                 }
               }
             },
+          ),
+          BlocListener<PartidaBloc, PartidaState>(
+            bloc: partidaBloc,
+            listenWhen: (prev, current) => current is ComprobarGanadorLoadedState,
+            listener: (context, state) {
+              if (state is ComprobarGanadorLoadedState) {
+                final comprobadorState = state as ComprobarGanadorLoadedState;
+                if (comprobadorState.haGanado) {
+                  _timerGanador?.cancel();
+                  final ganador = comprobadorState.ganador;
+                  partidaBloc.add(postVerMano(VerMano(
+                    idBaraja: widget.idPartida,
+                    idJugador: usu.id,
+                  )));
+                  partidaBloc.add(ObtenerSiguienteJugadorEvent(idPartida: widget.idPartida));
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('¡Esta ronda la ha ganado! ${ganador}'),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                }
+              }            },
           ),
         ],
         child: BlocBuilder<PartidaBloc, PartidaState>(
@@ -249,10 +270,6 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
   }
 
   Widget _buildContenidoPartida(PartidaState state) {
-    if (state is VerCartasLoadingState || state is VerTriunfoLoadingState) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
     return Column(
       children: [
         Padding(
@@ -338,13 +355,6 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
                             ),
                           ),
                         );
-
-                        _timerGanador?.cancel();
-                        _timerGanador = Timer.periodic(const Duration(seconds: 2), (_) {
-                          partidaBloc.add(ComprobarGanadorEvent(
-                            BuscarCarta: CartaJugadaRival(idJugador: "${usu.id}", idBaraja: widget.idPartida)
-                          ));
-                        });
 
                         setState(() {
                           misCartas.removeAt(selectedCardIndices.first);

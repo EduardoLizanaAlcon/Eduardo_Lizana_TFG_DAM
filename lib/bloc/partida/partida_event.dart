@@ -45,10 +45,10 @@ class CartaJugadaRivalEvent extends PartidaEvent {
 }
 
 class ComprobarGanadorEvent extends PartidaEvent {
-  final CartaJugadaRival BuscarCarta;
+  final ComprobarRonda comprobarRonda;
 
 
-  ComprobarGanadorEvent({required this.BuscarCarta});
+  ComprobarGanadorEvent({required this.comprobarRonda});
 }
 
 class Cantar20Event extends PartidaEvent {

@@ -22,7 +22,7 @@ class ContenedorRegistroCard {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset('assets/icons/generic/registro.png'), // Cambia el ícono si deseas
+            // Image.asset('assets/icons/generic/registro.png'), // Cambia el ícono si deseas
             SizedBox(height: 20),
             TextTitulo().GetTextTitulo('Crear cuenta'),
             SizedBox(height: 10),

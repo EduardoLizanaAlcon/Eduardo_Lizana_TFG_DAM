@@ -47,6 +47,7 @@ class InfoGanador {
   List<int>? cartasRepartidas;
   String? triunfo;
   int? siguienteJugador;
+  dynamic informacionCoto;
 
   InfoGanador({
     this.success,
@@ -55,6 +56,7 @@ class InfoGanador {
     this.cartasRepartidas,
     this.triunfo,
     this.siguienteJugador,
+    this.informacionCoto,
   });
 
   factory InfoGanador.fromJson(Map<String, dynamic> json) => InfoGanador(
@@ -64,6 +66,7 @@ class InfoGanador {
     cartasRepartidas: json["cartasRepartidas"] == null ? [] : List<int>.from(json["cartasRepartidas"]!.map((x) => x)),
     triunfo: json["triunfo"],
     siguienteJugador: json["siguiente_jugador"],
+    informacionCoto: json["informacion_coto"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -73,6 +76,7 @@ class InfoGanador {
     "cartasRepartidas": cartasRepartidas == null ? [] : List<dynamic>.from(cartasRepartidas!.map((x) => x)),
     "triunfo": triunfo,
     "siguiente_jugador": siguienteJugador,
+    "informacion_coto": informacionCoto,
   };
 }
 

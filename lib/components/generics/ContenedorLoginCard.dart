@@ -16,7 +16,7 @@ class Contenedorlogincard {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset('assets/icons/generic/cohete.png'),
+            // Image.asset('assets/icons/generic/baraja.png'),
             SizedBox(height: 20),
             TextTitulo().GetTextTitulo('Iniciar sesión'),
             SizedBox(height: 10),

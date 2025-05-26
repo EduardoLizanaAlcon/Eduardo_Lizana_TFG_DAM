@@ -7,6 +7,7 @@ import 'package:tfg_ginyote/domain/partida/VerTriunfoResponse.dart';
 import 'package:tfg_ginyote/use-cases/partida/JugarManoUseCase.dart';
 import '../../domain/partida/CartaJugadaRival.dart';
 import '../../domain/partida/CartaJugadaRivalResponse.dart';
+import '../../domain/partida/ComprobarRonda.dart';
 import '../../domain/partida/JugarCarta.dart';
 import '../../domain/partida/JugarCartaResponse.dart';
 import '../../domain/partida/VerGlobal.dart';
@@ -46,6 +47,7 @@ class PartidaBloc extends Bloc<PartidaEvent, PartidaState> {
       this._cantar20UseCase,
       this._cantar40UseCase,
       this._cartaJugadaRivalUseCase,
+      this._comprobarGanadorUseCase,
     ) : super(UserInitial()) {
     on<postBuscarPartidaEvent>((event, emit) async{
       final response = await _buscarPartidaUserCase!.postBuscarPartida(event.buscador);
@@ -107,10 +109,10 @@ class PartidaBloc extends Bloc<PartidaEvent, PartidaState> {
       }
     });
     on<ComprobarGanadorEvent>((event, emit) async{
-      final response = await _comprobarGanadorUseCase!.postComprobarRonda(event.BuscarCarta);
+      final response = await _comprobarGanadorUseCase!.postComprobarRonda(event.comprobarRonda);
 
       if (response!.success) {
-        emit(ComprobarGanadorLoadedState(haGanado: true));
+        emit(ComprobarGanadorLoadedState(haGanado: true, ganador: "${response.ganador}"));
       }else{
         emit(ComprobarGanadorLoadedState(haGanado: false));
       }

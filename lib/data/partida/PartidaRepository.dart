@@ -1,4 +1,5 @@
 import 'package:tfg_ginyote/domain/historial/EnviarAHIstorial.dart';
+import 'package:tfg_ginyote/domain/partida/ComprobarRonda.dart';
 import 'package:tfg_ginyote/domain/partida/JugarCarta.dart';
 import 'package:tfg_ginyote/domain/partida/VerGlobal.dart';
 import 'package:tfg_ginyote/domain/partida/VerMano.dart';
@@ -7,6 +8,9 @@ import 'package:tfg_ginyote/domain/partida/VerTriunfoResponse.dart';
 import '../../domain/partida/BuscarpartidaResponse.dart';
 import '../../domain/partida/CartaJugadaRival.dart';
 import '../../domain/partida/CartaJugadaRivalResponse.dart';
+import '../../domain/partida/ComprobarRonda.dart';
+import '../../domain/partida/ComprobarRonda.dart';
+import '../../domain/partida/ComprobarRondaResponse.dart';
 import '../../domain/partida/EnviarBuscarPartida.dart';
 import '../../domain/partida/JugarCartaResponse.dart';
 import '../../domain/partida/SiguienteJugadorResponse.dart';
@@ -22,7 +26,7 @@ class PartidaRepository {
   Future<SiguienteJugadorResponse?> obtenerSiguienteJugador(String idPartida) async => await _PartidaService.obtenerSiguienteJugador(idPartida);
   Future<JugarCartaResponse?> jugarCarta(JugarCarta cartJugada ) async => await _PartidaService.jugarCarta(cartJugada);
   Future<CartaJugadaRivalResponse?> VerCartaJugadaRival(CartaJugadaRival cartrivJugada) async => await _PartidaService.postVerCartaJugadaRival(cartrivJugada);
-  Future<CartaJugadaRivalResponse?> ComprobarRonda(CartaJugadaRival cartrivJugada) async => await _PartidaService.postComprobarRondaService(cartrivJugada);
+  Future<ComprobarRondaResponse?> PostComprobarRonda(ComprobarRonda compRonda) async => await _PartidaService.postComprobarRondaService(compRonda);
 
   // Future<Map<String, dynamic>?> cantar20({
   //   required String idPartida,
