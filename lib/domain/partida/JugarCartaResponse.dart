@@ -44,10 +44,11 @@ class InfoGanador {
   bool? success;
   int? ganador;
   List<String>? cartasGanadas;
-  List<int>? cartasRepartidas;
+  int? cartasRepartidas;
   String? triunfo;
   int? siguienteJugador;
-  dynamic informacionCoto;
+  InformacionCoto? informacionCoto;
+  bool? arrastre;
 
   InfoGanador({
     this.success,
@@ -57,26 +58,53 @@ class InfoGanador {
     this.triunfo,
     this.siguienteJugador,
     this.informacionCoto,
+    this.arrastre,
   });
 
   factory InfoGanador.fromJson(Map<String, dynamic> json) => InfoGanador(
     success: json["success"],
     ganador: json["ganador"],
     cartasGanadas: json["cartasGanadas"] == null ? [] : List<String>.from(json["cartasGanadas"]!.map((x) => x)),
-    cartasRepartidas: json["cartasRepartidas"] == null ? [] : List<int>.from(json["cartasRepartidas"]!.map((x) => x)),
+    cartasRepartidas: json["cartasRepartidas"],
     triunfo: json["triunfo"],
     siguienteJugador: json["siguiente_jugador"],
-    informacionCoto: json["informacion_coto"],
+    informacionCoto: json["informacion_coto"] == null ? null : InformacionCoto.fromJson(json["informacion_coto"]),
+    arrastre: json["arrastre"],
   );
 
   Map<String, dynamic> toJson() => {
     "success": success,
     "ganador": ganador,
     "cartasGanadas": cartasGanadas == null ? [] : List<dynamic>.from(cartasGanadas!.map((x) => x)),
-    "cartasRepartidas": cartasRepartidas == null ? [] : List<dynamic>.from(cartasRepartidas!.map((x) => x)),
+    "cartasRepartidas": cartasRepartidas,
     "triunfo": triunfo,
     "siguiente_jugador": siguienteJugador,
-    "informacion_coto": informacionCoto,
+    "informacion_coto": informacionCoto?.toJson(),
+    "arrastre": arrastre,
+  };
+}
+
+class InformacionCoto {
+  bool? success;
+  int? puntosEquipo1;
+  int? puntosEquipo2;
+
+  InformacionCoto({
+    this.success,
+    this.puntosEquipo1,
+    this.puntosEquipo2,
+  });
+
+  factory InformacionCoto.fromJson(Map<String, dynamic> json) => InformacionCoto(
+    success: json["success"],
+    puntosEquipo1: json["puntos_equipo1"],
+    puntosEquipo2: json["puntos_equipo2"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "success": success,
+    "puntos_equipo1": puntosEquipo1,
+    "puntos_equipo2": puntosEquipo2,
   };
 }
 

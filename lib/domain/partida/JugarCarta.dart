@@ -13,12 +13,14 @@ class JugarCarta {
   int? idJugador;
   String? carta;
   bool? primero;
+  bool? arrastre=false;
 
   JugarCarta({
     this.idBaraja,
     this.idJugador,
     this.carta,
     this.primero,
+    this.arrastre,
   });
 
   factory JugarCarta.fromJson(Map<String, dynamic> json) => JugarCarta(
@@ -26,6 +28,7 @@ class JugarCarta {
     idJugador: json["idJugador"],
     carta: json["carta"],
     primero: json["primero"],
+    arrastre: json["arrastre"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -33,5 +36,6 @@ class JugarCarta {
     "idJugador": idJugador,
     "carta": carta,
     "primero": primero,
+    'arrastre': arrastre,
   };
 }
