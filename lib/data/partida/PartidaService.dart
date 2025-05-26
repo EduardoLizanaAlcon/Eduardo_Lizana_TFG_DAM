@@ -31,7 +31,6 @@ class PartidaService {
 
       };
       final response = await apiClient.post('${Entorno().getEntorno()}PartidaControlador/ObtenerJugadores',  headers, buscarPartidaToJson(buscador)).timeout(Duration(seconds: 10));
-      print('Response body: ${response}');
       final l = buscarpartidaResponseFromJson(response);
       return l;
 
@@ -92,8 +91,8 @@ class PartidaService {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       };
+
       final response = await apiClient.post('${Entorno().getEntorno()}PartidaControlador/verCartaRival',  headers,  cartaJugadaRivalToJson(CartaRivalJugada));
-      print("a");
       final l = cartaJugadaRivalResponseFromJson(response);
       return l;
 

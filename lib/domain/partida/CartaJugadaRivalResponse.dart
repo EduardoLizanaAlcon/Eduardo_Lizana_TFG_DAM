@@ -13,19 +13,23 @@ String cartaJugadaRivalResponseToJson(CartaJugadaRivalResponse data) => json.enc
 class CartaJugadaRivalResponse {
   bool success;
   List<Carta>? cartasRival;
+  bool? arrastre;
 
   CartaJugadaRivalResponse({
     required this.success,
     this.cartasRival,
+    this.arrastre
   });
 
   factory CartaJugadaRivalResponse.fromJson(Map<String, dynamic> json) => CartaJugadaRivalResponse(
     success: json["success"],
+    arrastre: json["arrastre"],
     cartasRival: json["cartasRival"] == null ? [] : List<Carta>.from(json["cartasRival"]!.map((x) => Carta.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
     "success": success,
+    "arrastre": arrastre,
     "cartasRival": cartasRival == null ? [] : List<dynamic>.from(cartasRival!.map((x) => x.toJson())),
   };
 }

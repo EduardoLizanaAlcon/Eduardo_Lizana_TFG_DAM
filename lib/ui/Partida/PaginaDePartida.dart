@@ -32,6 +32,7 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
   Cartas? cartaTriunfo;
   String? siguienteJugador;
   bool esMiTurno = false;
+  bool arrastre = false;
   Timer? _timer;
   Timer? _timerGanador;
   String? _ultimaCartaJugada;
@@ -82,6 +83,33 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
   int cartaComparator(Carta a, Carta b) {
     const orden = ['ACE', '3', 'KING', 'QUEEN', 'JACK', '7', '6', '5', '4', '2'];
     return orden.indexOf(a.value).compareTo(orden.indexOf(b.value));
+  }
+
+  List<int> obtenerIndicesCartasPermitidas() {
+    if (!arrastre || cartasJugadas.isEmpty) {
+      return List.generate(misCartas.length, (index) => index);
+    }
+
+    final cartaRival = cartasJugadas.last;
+    final mismoPalo = <int>[];
+    final triunfos = <int>[];
+
+    for (int i = 0; i < misCartas.length; i++) {
+      final carta = misCartas[i];
+      if (carta.suit == cartaRival.suit) {
+        mismoPalo.add(i);
+      } else if (carta.suit == cartaTriunfo?.suit) {
+        triunfos.add(i);
+      }
+    }
+
+    if (mismoPalo.isNotEmpty) {
+      return mismoPalo;
+    } else if (triunfos.isNotEmpty) {
+      return triunfos;
+    } else {
+      return List.generate(misCartas.length, (index) => index);
+    }
   }
 
   @override
@@ -170,6 +198,7 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
                         images: carta.images,
                       ));
                     }
+                    arrastre = state.repuestaCartaRivalJugada.arrastre == true;
                   });
                 }
               }
@@ -220,24 +249,27 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
             listenWhen: (prev, current) => current is ComprobarGanadorLoadedState,
             listener: (context, state) {
               if (state is ComprobarGanadorLoadedState) {
-                final comprobadorState = state as ComprobarGanadorLoadedState;
-                if (comprobadorState.haGanado) {
-                  _timerGanador?.cancel();
-                  final ganador = comprobadorState.ganador;
-                  partidaBloc.add(postVerMano(VerMano(
-                    idBaraja: widget.idPartida,
-                    idJugador: usu.id,
-                  )));
-                  partidaBloc.add(ObtenerSiguienteJugadorEvent(idPartida: widget.idPartida));
+                _timerGanador?.cancel();
+                final ganador = state.ganador;
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('¡Esta ronda la ha ganado! ${ganador}'),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                }
-              }            },
+                partidaBloc.add(postVerMano(VerMano(
+                  idBaraja: widget.idPartida,
+                  idJugador: usu.id,
+                )));
+                partidaBloc.add(ObtenerSiguienteJugadorEvent(idPartida: widget.idPartida));
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('¡Esta ronda la ha ganado $ganador!'),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+
+                setState(() {
+                  cartasJugadas.clear();
+                });
+              }
+            },
           ),
         ],
         child: BlocBuilder<PartidaBloc, PartidaState>(
@@ -270,6 +302,8 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
   }
 
   Widget _buildContenidoPartida(PartidaState state) {
+    final indicesPermitidos = obtenerIndicesCartasPermitidas();
+
     return Column(
       children: [
         Padding(
@@ -340,7 +374,10 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
                     ),
                     const SizedBox(height: 10),
                     ElevatedButton(
-                      onPressed: (esMiTurno && puedeJugarCarta && siguienteJugador != null)
+                      onPressed: (esMiTurno &&
+                          puedeJugarCarta &&
+                          siguienteJugador != null &&
+                          indicesPermitidos.contains(selectedCardIndices.first))
                           ? () {
                         final cartaSeleccionada = misCartas[selectedCardIndices.first];
                         _ultimaCartaJugada = cartaSeleccionada.code;
@@ -380,31 +417,36 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
             itemBuilder: (context, index) {
               final carta = misCartas[index];
               final isSelected = selectedCardIndices.contains(index);
+              final esPermitida = indicesPermitidos.contains(index);
 
               return GestureDetector(
                 onTap: () {
-                  if (esMiTurno && siguienteJugador != null) {
+                  if (esMiTurno && siguienteJugador != null && esPermitida) {
                     setState(() {
                       if (isSelected) {
                         selectedCardIndices.remove(index);
                       } else {
+                        selectedCardIndices.clear();
                         selectedCardIndices.add(index);
                       }
                     });
                   }
                 },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  margin: EdgeInsets.only(
-                    top: isSelected ? 0 : 20,
-                    left: 8,
-                    right: 8,
+                child: Opacity(
+                  opacity: esPermitida ? 1.0 : 0.3,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    margin: EdgeInsets.only(
+                      top: isSelected ? 0 : 20,
+                      left: 8,
+                      right: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      border: isSelected ? Border.all(color: Colors.green, width: 3) : null,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Image.network(carta.image, height: 100),
                   ),
-                  decoration: BoxDecoration(
-                    border: isSelected ? Border.all(color: Colors.green, width: 3) : null,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Image.network(carta.image, height: 100),
                 ),
               );
             },

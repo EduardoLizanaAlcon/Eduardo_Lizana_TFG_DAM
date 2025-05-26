@@ -100,6 +100,7 @@ class PartidaBloc extends Bloc<PartidaEvent, PartidaState> {
         emit(JugarCartaLoadingState(response));
       }
     });
+
     on<CartaJugadaRivalEvent>((event, emit) async{
       final response = await _cartaJugadaRivalUseCase!.postVerCartaJugadaRival(event.BuscarCarta);
       if (response!.success) {
@@ -108,6 +109,7 @@ class PartidaBloc extends Bloc<PartidaEvent, PartidaState> {
         emit(CartaJugadaRivalLoadingState(response));
       }
     });
+
     on<ComprobarGanadorEvent>((event, emit) async{
       final response = await _comprobarGanadorUseCase!.postComprobarRonda(event.comprobarRonda);
 
