@@ -1,6 +1,5 @@
 import "dart:convert";
 
-import "package:tfg_ginyote/bloc/partida/partida_bloc.dart";
 import "package:tfg_ginyote/domain/partida/CartaJugadaRival.dart";
 import "package:tfg_ginyote/domain/partida/JugarCarta.dart";
 import "package:tfg_ginyote/domain/partida/VerGlobal.dart";
@@ -30,7 +29,7 @@ class PartidaService {
         'Accept': 'application/json',
 
       };
-      final response = await apiClient.post('${Entorno().getEntorno()}PartidaControlador/ObtenerJugadores',  headers, buscarPartidaToJson(buscador)).timeout(Duration(seconds: 10));
+      final response = await apiClient.post('${Entorno().getEntorno()}PartidaControlador/ObtenerJugadores',  headers, buscarPartidaToJson(buscador));
       final l = buscarpartidaResponseFromJson(response);
       return l;
 

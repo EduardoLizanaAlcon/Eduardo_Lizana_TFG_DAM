@@ -263,12 +263,12 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
                   )));
                   partidaBloc.add(ObtenerSiguienteJugadorEvent(idPartida: widget.idPartida));
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('¡Esta ronda la ha ganado $ganador!'),
-                      duration: const Duration(seconds: 2),
-                    ),
-                  );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('¡Esta ronda la ha ganado $ganador!'),
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
 
                   setState(() {
                     cartasJugadas.clear();
@@ -299,9 +299,9 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
           },
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
+      bottomNavigationBar: const BottomAppBar(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.0),
           child: Text('Menú inferior', textAlign: TextAlign.center),
         ),
       ),

@@ -119,24 +119,6 @@ class PartidaBloc extends Bloc<PartidaEvent, PartidaState> {
         emit(ComprobarGanadorLoadedState(haGanado: false));
       }
     });
-
-    // on<Cantar20Event>((event, emit) async{
-    //   final response = await _verGlobalUserCase!.postVerGlobal(event.global);
-    //   if (response!.success) {
-    //     emit(BuscarPartidaLoadedState(response));
-    //   }else{
-    //     emit(BuscadorLoadingState(response));
-    //   }
-    // });
-    // on<Cantar40Event>((event, emit) async{
-    //   final response = await _verGlobalUserCase!.postVerGlobal(event.global);
-    //   if (response!.success) {
-    //     emit(BuscarPartidaLoadedState(response));
-    //   }else{
-    //     emit(BuscadorLoadingState(response));
-    //   }
-    // });
-
   }
 }
 
