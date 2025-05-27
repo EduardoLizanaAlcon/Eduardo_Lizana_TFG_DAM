@@ -52,6 +52,18 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
     super.dispose();
   }
 
+  void iniciarComprobarGanadorRecurrente() {
+    _timerGanador?.cancel();
+    _timerGanador = Timer.periodic(const Duration(seconds: 2), (_) {
+      partidaBloc.add(ComprobarGanadorEvent(
+        comprobarRonda: ComprobarRonda(
+          idCarta: _ultimaCartaJugada!,
+          idBaraja: widget.idPartida,
+        ),
+      ));
+    });
+  }
+
   bool get puedeJugarCarta => selectedCardIndices.length == 1;
 
   bool get puedeCantar20 {
@@ -231,15 +243,7 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
                     cartasJugadas.clear();
                   });
                 } else {
-                  _timerGanador?.cancel();
-                  _timerGanador = Timer.periodic(const Duration(seconds: 2), (_) {
-                    partidaBloc.add(ComprobarGanadorEvent(
-                      comprobarRonda: ComprobarRonda(
-                        idCarta: _ultimaCartaJugada!,
-                        idBaraja: widget.idPartida,
-                      ),
-                    ));
-                  });
+                  iniciarComprobarGanadorRecurrente();
                 }
               }
             },
@@ -249,25 +253,28 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
             listenWhen: (prev, current) => current is ComprobarGanadorLoadedState,
             listener: (context, state) {
               if (state is ComprobarGanadorLoadedState) {
-                _timerGanador?.cancel();
-                final ganador = state.ganador;
+                if (state.haGanado == true) {
+                  _timerGanador?.cancel();
+                  final ganador = state.ganador;
 
-                partidaBloc.add(postVerMano(VerMano(
-                  idBaraja: widget.idPartida,
-                  idJugador: usu.id,
-                )));
-                partidaBloc.add(ObtenerSiguienteJugadorEvent(idPartida: widget.idPartida));
+                  partidaBloc.add(postVerMano(VerMano(
+                    idBaraja: widget.idPartida,
+                    idJugador: usu.id,
+                  )));
+                  partidaBloc.add(ObtenerSiguienteJugadorEvent(idPartida: widget.idPartida));
 
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('¡Esta ronda la ha ganado $ganador!'),
-                    duration: const Duration(seconds: 2),
-                  ),
-                );
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('¡Esta ronda la ha ganado $ganador!'),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
 
-                setState(() {
-                  cartasJugadas.clear();
-                });
+                  setState(() {
+                    cartasJugadas.clear();
+                  });
+                }
+                // Si no tiene success, seguirá el timer activo haciendo peticiones
               }
             },
           ),
@@ -389,7 +396,7 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
                               idJugador: usu.id,
                               carta: cartaSeleccionada.code,
                               primero: cartasJugadas.isEmpty,
-                              arrastre: arrastre
+                              arrastre: arrastre,
                             ),
                           ),
                         );

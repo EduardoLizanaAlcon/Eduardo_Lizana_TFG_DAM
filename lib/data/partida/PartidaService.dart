@@ -35,7 +35,8 @@ class PartidaService {
       return l;
 
     }catch(e){
-      return null;
+      String response = '{"success":false}';
+      return buscarpartidaResponseFromJson(response);
     }
   }
   Future<VerManoResponse?> postVerMano(VerMano mano) async {
@@ -50,7 +51,8 @@ class PartidaService {
       return l;
 
     }catch(e){
-      print('Error al hacer la solicitud: $e');
+      String response = '{"success":false}';
+      verManoResponseFromJson(response);
       return null;
     }
   }
@@ -65,8 +67,8 @@ class PartidaService {
       return l;
 
     }catch(e){
-      // BuscarpartidaResponse hr = BuscarpartidaResponse(success: false);
-      return null;
+      String response = '{"success":false}';
+      return verGlobalResponseFromJson(response);
     }
   }
   Future<VerTriunfoResponse?> postVerTriunfo(VerTriunfo triunfo) async {
@@ -81,7 +83,8 @@ class PartidaService {
       return l;
 
     }catch(e){
-      return null;
+      String response = '{"success":false}';
+      return verTriunfoResponseFromJson(response);
     }
   }
 
@@ -97,7 +100,8 @@ class PartidaService {
       return l;
 
     }catch(e){
-      return null;
+      String response = '{"success":false}';
+      return cartaJugadaRivalResponseFromJson(response);
     }
   }
 
@@ -113,11 +117,11 @@ class PartidaService {
         headers,
         body,
       );
-      print("object");
       return siguienteJugadorResponseFromJson(response);
     } catch (e) {
       print('Error al obtener siguiente jugador: $e');
-      return null;
+      String response = '{"success":false}';
+      return siguienteJugadorResponseFromJson(response);
     }
   }
 
@@ -134,11 +138,10 @@ class PartidaService {
         headers,
         jugarCartaToJson(cartaJugada),
       );
-      print("a");
       return jugarCartaResponseFromJson(response);
     } catch (e) {
-      print('Error al jugar carta: $e');
-      return null;
+      String response = '{"success":false}';
+      return jugarCartaResponseFromJson(response);
     }
   }
 
@@ -157,8 +160,8 @@ class PartidaService {
       );
       return comprobarRondaResponseFromJson(response);
     } catch (e) {
-      print('Error al jugar carta: $e');
-      return null;
+      String response = '{"success":false}';
+      return comprobarRondaResponseFromJson(response);
     }
   }
 
