@@ -130,10 +130,11 @@ class PartidaService {
         'Accept': 'application/json',
       };
       final response = await apiClient.post(
-        '${Entorno().getEntorno()}PartidaControlador/ObtenerGanador',
+        '${Entorno().getEntorno()}PartidaControlador/JugarCarta',
         headers,
         jugarCartaToJson(cartaJugada),
       );
+      print("a");
       return jugarCartaResponseFromJson(response);
     } catch (e) {
       print('Error al jugar carta: $e');

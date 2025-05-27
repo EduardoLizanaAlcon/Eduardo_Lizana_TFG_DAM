@@ -389,6 +389,7 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
                               idJugador: usu.id,
                               carta: cartaSeleccionada.code,
                               primero: cartasJugadas.isEmpty,
+                              arrastre: arrastre
                             ),
                           ),
                         );
