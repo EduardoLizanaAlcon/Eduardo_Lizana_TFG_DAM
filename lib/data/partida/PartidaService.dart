@@ -8,6 +8,8 @@ import "package:tfg_ginyote/domain/partida/VerTriunfo.dart";
 import "package:tfg_ginyote/domain/partida/VerTriunfoResponse.dart";
 
 import "../../domain/partida/BuscarpartidaResponse.dart";
+import "../../domain/partida/CambiarTriunfo.dart";
+import "../../domain/partida/CambiarTriunfoResponse.dart";
 import "../../domain/partida/CartaJugadaRivalResponse.dart";
 import "../../domain/partida/ComprobarRonda.dart";
 import "../../domain/partida/ComprobarRondaResponse.dart";
@@ -86,7 +88,6 @@ class PartidaService {
       return verTriunfoResponseFromJson(response);
     }
   }
-
   Future<CartaJugadaRivalResponse?> postVerCartaJugadaRival(CartaJugadaRival CartaRivalJugada) async {
     try{
       final headers = {
@@ -103,7 +104,6 @@ class PartidaService {
       return cartaJugadaRivalResponseFromJson(response);
     }
   }
-
   Future<SiguienteJugadorResponse?> obtenerSiguienteJugador(String idPartida) async {
     try {
       final headers = {
@@ -123,7 +123,6 @@ class PartidaService {
       return siguienteJugadorResponseFromJson(response);
     }
   }
-
   Future<JugarCartaResponse?> jugarCarta(
       JugarCarta cartaJugada
       ) async {
@@ -143,7 +142,6 @@ class PartidaService {
       return jugarCartaResponseFromJson(response);
     }
   }
-
   Future<ComprobarRondaResponse?> postComprobarRondaService(
       ComprobarRonda compRonda
       ) async {
@@ -161,6 +159,25 @@ class PartidaService {
     } catch (e) {
       String response = '{"success":false}';
       return comprobarRondaResponseFromJson(response);
+    }
+  }
+  Future<CambiarTriunfoResponse?> postCambiarTriunfoService(
+      CambiarTriunfo compTriunfo
+      ) async {
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      final response = await apiClient.post(
+        '${Entorno().getEntorno()}PartidaControlador/CambiarCartaTriunfo',
+        headers,
+        cambiarTriunfoToJson(compTriunfo),
+      );
+      return cambiarTriunfoResponseFromJson(response);
+    } catch (e) {
+      String response = '{"success":false}';
+      return cambiarTriunfoResponseFromJson(response);
     }
   }
 

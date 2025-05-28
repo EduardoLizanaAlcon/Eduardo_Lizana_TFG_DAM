@@ -1,10 +1,12 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:tfg_ginyote/domain/partida/BuscarpartidaResponse.dart';
+import 'package:tfg_ginyote/domain/partida/CambiarTriunfoResponse.dart';
 import 'package:tfg_ginyote/domain/partida/EnviarBuscarPartida.dart';
 import 'package:tfg_ginyote/domain/partida/VerMano.dart';
 import 'package:tfg_ginyote/domain/partida/VerTriunfoResponse.dart';
 import 'package:tfg_ginyote/use-cases/partida/JugarManoUseCase.dart';
+import '../../domain/partida/CambiarTriunfo.dart';
 import '../../domain/partida/CartaJugadaRival.dart';
 import '../../domain/partida/CartaJugadaRivalResponse.dart';
 import '../../domain/partida/ComprobarRonda.dart';
@@ -14,6 +16,7 @@ import '../../domain/partida/VerGlobal.dart';
 import '../../domain/partida/VerManoResponse.dart';
 import '../../domain/partida/VerTriunfo.dart';
 import '../../use-cases/partida/BuscarPartidaUserCase.dart';
+import '../../use-cases/partida/CambiarTriunfoUseCase.dart';
 import '../../use-cases/partida/Cantar20UseCase.dart';
 import '../../use-cases/partida/Cantar40UseCase.dart';
 import '../../use-cases/partida/CartaJugadaRivalUseCase.dart';
@@ -36,6 +39,7 @@ class PartidaBloc extends Bloc<PartidaEvent, PartidaState> {
   Cantar40UseCase? _cantar40UseCase;
   CartaJugadaRivalUseCase? _cartaJugadaRivalUseCase;
   ComprobarGanadorUseCase? _comprobarGanadorUseCase;
+  CambiarTriunfoUseCase? _cambiarTriunfoUseCase;
 
   PartidaBloc(
       this._buscarPartidaUserCase,
@@ -48,6 +52,7 @@ class PartidaBloc extends Bloc<PartidaEvent, PartidaState> {
       this._cantar40UseCase,
       this._cartaJugadaRivalUseCase,
       this._comprobarGanadorUseCase,
+      this._cambiarTriunfoUseCase,
     ) : super(UserInitial()) {
     on<postBuscarPartidaEvent>((event, emit) async{
       final response = await _buscarPartidaUserCase!.postBuscarPartida(event.buscador);
@@ -119,6 +124,17 @@ class PartidaBloc extends Bloc<PartidaEvent, PartidaState> {
         emit(ComprobarGanadorLoadedState(haGanado: false));
       }
     });
+
+    on<CambiarTriunfoEvent>((event, emit) async {
+      final response = await _cambiarTriunfoUseCase!.postCambiarTriunfo(event.comprobarRonda);
+
+      if (response != null && response.success) {
+        emit(CambiarTriunfoLoadedState(response));
+      } else {
+        emit(CambiarTriunfoErrorState(mensaje: 'Error al cambiar triunfo'));
+      }
+    });
+
   }
 }
 

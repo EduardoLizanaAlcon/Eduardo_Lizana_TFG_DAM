@@ -51,6 +51,12 @@ class ComprobarGanadorEvent extends PartidaEvent {
   ComprobarGanadorEvent({required this.comprobarRonda});
 }
 
+class CambiarTriunfoEvent extends PartidaEvent {
+  final CambiarTriunfo comprobarRonda;
+
+  CambiarTriunfoEvent(this.comprobarRonda);
+}
+
 class Cantar20Event extends PartidaEvent {
   final String idPartida;
   final int idJugador;

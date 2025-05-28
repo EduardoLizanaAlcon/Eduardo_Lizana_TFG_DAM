@@ -1,4 +1,5 @@
 import 'package:tfg_ginyote/domain/historial/EnviarAHIstorial.dart';
+import 'package:tfg_ginyote/domain/partida/CambiarTriunfo.dart';
 import 'package:tfg_ginyote/domain/partida/ComprobarRonda.dart';
 import 'package:tfg_ginyote/domain/partida/JugarCarta.dart';
 import 'package:tfg_ginyote/domain/partida/VerGlobal.dart';
@@ -6,6 +7,7 @@ import 'package:tfg_ginyote/domain/partida/VerMano.dart';
 import 'package:tfg_ginyote/domain/partida/VerTriunfo.dart';
 import 'package:tfg_ginyote/domain/partida/VerTriunfoResponse.dart';
 import '../../domain/partida/BuscarpartidaResponse.dart';
+import '../../domain/partida/CambiarTriunfoResponse.dart';
 import '../../domain/partida/CartaJugadaRival.dart';
 import '../../domain/partida/CartaJugadaRivalResponse.dart';
 import '../../domain/partida/ComprobarRonda.dart';
@@ -27,6 +29,7 @@ class PartidaRepository {
   Future<JugarCartaResponse?> jugarCarta(JugarCarta cartJugada ) async => await _PartidaService.jugarCarta(cartJugada);
   Future<CartaJugadaRivalResponse?> VerCartaJugadaRival(CartaJugadaRival cartrivJugada) async => await _PartidaService.postVerCartaJugadaRival(cartrivJugada);
   Future<ComprobarRondaResponse?> PostComprobarRonda(ComprobarRonda compRonda) async => await _PartidaService.postComprobarRondaService(compRonda);
+  Future<CambiarTriunfoResponse?> postCambiarTriunfo(CambiarTriunfo cambTriunfo) async => await _PartidaService.postCambiarTriunfoService(cambTriunfo);
 
   // Future<Map<String, dynamic>?> cantar20({
   //   required String idPartida,

@@ -96,4 +96,12 @@ class CartaJugadaRivalLoadingState extends PartidaState {
   CartaJugadaRivalLoadingState(this.repuestaCartaRivalJugada);
 }
 
+class CambiarTriunfoLoadedState extends PartidaState {
+  final CambiarTriunfoResponse cambiarTriunfoResponse;
+  CambiarTriunfoLoadedState(this.cambiarTriunfoResponse);
+}
+class CambiarTriunfoErrorState extends PartidaState {
+  final String mensaje;
+  CambiarTriunfoErrorState({required this.mensaje});
+}
 
