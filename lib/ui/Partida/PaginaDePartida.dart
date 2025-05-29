@@ -60,10 +60,13 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
         comprobarRonda: ComprobarRonda(
           idCarta: _ultimaCartaJugada!,
           idBaraja: widget.idPartida,
+          set: 1
         ),
       ));
     });
   }
+
+
 
   bool get puedeJugarCarta => selectedCardIndices.length == 1;
 
@@ -299,27 +302,107 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
           BlocListener<PartidaBloc, PartidaState>(
             bloc: partidaBloc,
             listenWhen: (prev, current) => current is ComprobarGanadorLoadedState,
-            listener: (context, state) {
+            listener: (context, state) async {
               if (state is ComprobarGanadorLoadedState) {
-                if (state.haGanado == true) {
-                  _timerGanador?.cancel();
-                  final ganador = state.ganador;
+                final response = state.comprobarRondaResponse;
 
-                  partidaBloc.add(postVerMano(VerMano(
-                    idBaraja: widget.idPartida,
-                    idJugador: usu.id,
-                  )));
-                  partidaBloc.add(ObtenerSiguienteJugadorEvent(idPartida: widget.idPartida));
-
+                if (response.success) {
+                  // Mostrar ganador de jugada
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('¡Esta ronda la ha ganado $ganador!'),
+                      content: Text('¡Ganador de jugada: Jugador ${response.ganadorJugada}!'),
                       duration: const Duration(seconds: 2),
                     ),
-                  );
+                  ).closed.then((_) {
+                    if (response.ganadorSet != null) {
+                      // Mostrar ganador de set
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('¡Ganador del set: Jugador ${response.ganadorSet}!'),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      ).closed.then((_) {
+                        if (response.ganadorPartida == null) {
+                          // Si no hay ganador de partida, recargamos
+                          partidaBloc.add(postVerMano(VerMano(
+                            idBaraja: widget.idPartida,
+                            idJugador: usu.id,
+                          )));
+                          partidaBloc.add(verTriunfo(VerTriunfo(idBaraja: widget.idPartida)));
+                          partidaBloc.add(ObtenerSiguienteJugadorEvent(idPartida: widget.idPartida));
+                          setState(() {
+                            cartasJugadas.clear();
+                          });
+                        } else {
+                          // Si hay ganador de partida, mostrar pantalla final
+                          setState(() {
+                            misCartas.clear();
+                            cartasJugadas.clear();
+                            selectedCardIndices.clear();
+                            cartaTriunfo = null;
+                            siguienteJugador = null;
+                            esMiTurno = false;
+                          });
 
-                  setState(() {
-                    cartasJugadas.clear();
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (_) => AlertDialog(
+                              title: const Text('🏆 ¡Fin de la partida!'),
+                              content: Text('El ganador de la partida es el Jugador ${response.ganadorPartida}!'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop(); // Regresar a pantalla anterior o lobby
+                                  },
+                                  child: const Text('Salir'),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                      });
+                    } else {
+                      if (response.ganadorPartida == null) {
+                        partidaBloc.add(postVerMano(VerMano(
+                          idBaraja: widget.idPartida,
+                          idJugador: usu.id,
+                        )));
+                        partidaBloc.add(verTriunfo(VerTriunfo(idBaraja: widget.idPartida)));
+                        partidaBloc.add(ObtenerSiguienteJugadorEvent(idPartida: widget.idPartida));
+                        setState(() {
+                          cartasJugadas.clear();
+                        });
+                      } else {
+                        setState(() {
+                          misCartas.clear();
+                          cartasJugadas.clear();
+                          selectedCardIndices.clear();
+                          cartaTriunfo = null;
+                          siguienteJugador = null;
+                          esMiTurno = false;
+                        });
+
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (_) => AlertDialog(
+                            title: const Text('🏆 ¡Fin de la partida!'),
+                            content: Text('El ganador de la partida es el Jugador ${response.ganadorPartida}!'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop(); // Regresar a pantalla anterior o lobby
+                                },
+                                child: const Text('Salir'),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    }
                   });
                 }
               }

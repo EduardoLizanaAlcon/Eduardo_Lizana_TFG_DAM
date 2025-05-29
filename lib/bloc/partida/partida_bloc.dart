@@ -10,6 +10,7 @@ import '../../domain/partida/CambiarTriunfo.dart';
 import '../../domain/partida/CartaJugadaRival.dart';
 import '../../domain/partida/CartaJugadaRivalResponse.dart';
 import '../../domain/partida/ComprobarRonda.dart';
+import '../../domain/partida/ComprobarRondaResponse.dart';
 import '../../domain/partida/JugarCarta.dart';
 import '../../domain/partida/JugarCartaResponse.dart';
 import '../../domain/partida/VerGlobal.dart';
@@ -128,9 +129,9 @@ class PartidaBloc extends Bloc<PartidaEvent, PartidaState> {
       final response = await _comprobarGanadorUseCase!.postComprobarRonda(event.comprobarRonda);
 
       if (response!.success) {
-        emit(ComprobarGanadorLoadedState(haGanado: true, ganador: "${response.ganador}"));
+        emit(ComprobarGanadorLoadedState(response));
       }else{
-        emit(ComprobarGanadorLoadedState(haGanado: false));
+        emit(ComprobarGanadorLoadedState(response));
       }
     });
 

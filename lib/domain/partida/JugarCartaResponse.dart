@@ -122,17 +122,20 @@ class InformacionCoto {
 
 class InfoRonda {
   bool success;
+  int set;
   InfoJugador? infoJugador1;
   InfoJugador? infoJugador2;
 
   InfoRonda({
     this.success = false,
+    this.set =1,
     this.infoJugador1,
     this.infoJugador2,
   });
 
   factory InfoRonda.fromJson(Map<String, dynamic> json) => InfoRonda(
     success: json["success"] ?? false,
+    set: json["set"] ?? 1,
     infoJugador1: json["infoJugador1"] == null
         ? null
         : InfoJugador.fromJson(json["infoJugador1"]),
@@ -143,6 +146,7 @@ class InfoRonda {
 
   Map<String, dynamic> toJson() => {
     "success": success,
+    "set": set,
     "infoJugador1": infoJugador1?.toJson(),
     "infoJugador2": infoJugador2?.toJson(),
   };

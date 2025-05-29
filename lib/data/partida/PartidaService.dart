@@ -153,7 +153,7 @@ class PartidaService {
       final response = await apiClient.post(
         '${Entorno().getEntorno()}PartidaControlador/ObtenerGanador',
         headers,
-        ComprobarRondaToJson(compRonda),
+        comprobarRondaToJson(compRonda),
       );
       return comprobarRondaResponseFromJson(response);
     } catch (e) {

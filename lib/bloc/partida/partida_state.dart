@@ -55,9 +55,8 @@ class ErrorVerTriunfoState extends PartidaState {
 }
 
 class ComprobarGanadorLoadedState extends PartidaState {
-  final bool haGanado;
-  final String? ganador;
-  ComprobarGanadorLoadedState({required this.haGanado, this.ganador});
+  final ComprobarRondaResponse comprobarRondaResponse;
+  ComprobarGanadorLoadedState(this.comprobarRondaResponse);
 }
 
 class SiguienteJugadorLoadedState extends PartidaState {

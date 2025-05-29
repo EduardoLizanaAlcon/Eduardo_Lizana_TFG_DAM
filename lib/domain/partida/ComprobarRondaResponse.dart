@@ -10,20 +10,28 @@ String comprobarRondaResponseToJson(ComprobarRondaResponse data) => json.encode(
 
 class ComprobarRondaResponse {
   bool success;
-  int? ganador;
+  int? ganadorJugada;
+  int? ganadorSet;
+  int? ganadorPartida;
 
   ComprobarRondaResponse({
     required this.success,
-    this.ganador,
+    this.ganadorJugada,
+    this.ganadorSet,
+    this.ganadorPartida,
   });
 
   factory ComprobarRondaResponse.fromJson(Map<String, dynamic> json) => ComprobarRondaResponse(
     success: json["success"],
-    ganador: json["ganador"],
+    ganadorJugada: json["ganador_jugada"],
+    ganadorSet: json["ganador_set"],
+    ganadorPartida: json["ganador_partida"],
   );
 
   Map<String, dynamic> toJson() => {
     "success": success,
-    "ganador": ganador,
+    "ganador_jugada": ganadorJugada,
+    "ganador_set": ganadorSet,
+    "ganador_partida": ganadorPartida,
   };
 }
