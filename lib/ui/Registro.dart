@@ -23,6 +23,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Map<String, List<String>?> fieldErrors = {};
 
+  void showSnackBar(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : Colors.green,
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +41,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         create: (_) => userBloc,
         child: BlocListener<UserBloc, UserState>(
           listener: (context, state) {
-            if (state is LoadingRegisterState) {
+            if (state is LoadingLoginState) {
               setState(() {
                 isLoading = true;
               });
@@ -43,6 +53,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             if (state is ErrorState) {
               print("Registro fallido");
             } else if (state is RegistroState) {
+              showSnackBar("Perfil creado correctamente");
               Navigator.pop(context);
             }
           },

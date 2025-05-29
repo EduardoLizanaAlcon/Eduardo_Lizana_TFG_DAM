@@ -1,7 +1,9 @@
+import "package:tfg_ginyote/domain/user/PerfilEnviar.dart";
 import "package:tfg_ginyote/domain/user/Register.dart";
 import "package:tfg_ginyote/util/UsuarioDatos.dart";
 
 import "../../domain/user/Login.dart";
+import "../../domain/user/PerfilResponse.dart";
 import "../../domain/user/User.dart";
 import "../../util/Entorno.dart";
 import "../api-client-interfaz.dart";
@@ -39,6 +41,23 @@ class LoginService {
 
     }catch(e){
       RegisterResponse lr = RegisterResponse(success: false, mensaje: "Error en la autenticación. Intentalo más tarde", usuario: null);
+      return lr;
+    }
+  }
+
+  Future<PerfilResponse?> postEditarPerfil(PerfilEnviar perfilEnviar) async {
+    try{
+      final headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+
+      };
+      final response = await apiClient.post('${Entorno().getEntorno()}UserControlador/editarPerfil',  headers, perfilEnviarToJson(perfilEnviar));
+      final l = perfilResponseFromJson(response);
+      return l;
+
+    }catch(e){
+      PerfilResponse lr = PerfilResponse(success: false);
       return lr;
     }
   }

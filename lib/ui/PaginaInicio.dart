@@ -12,6 +12,7 @@ import '../components/generics/BotonInicioSesion.dart';
 import '../components/generics/ContenedorLoginCard.dart';
 import '../util/UsuarioDatos.dart';
 import 'Historial/ContPrincipalHistorial.dart';
+import 'Perfil.dart';
 
 class Paginainicio extends StatefulWidget {
   @override
@@ -101,7 +102,10 @@ class _Paginainiciostate extends State<Paginainicio> {
                           ),
                         ),
                         onPressed: () {
-                          print("1º opción");
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => EditProfileScreen()),
+                          );
                         },
                         child: Text("PERFIL"),
                       ),

@@ -32,14 +32,32 @@ class RegistroState extends UserState{
   RegistroState(this.registerResponse);
 }
 
-class LoadingRegisterState extends UserState{
+class RegisterState extends UserState{
   RegisterResponse registerResponse;
 
-  LoadingRegisterState(this.registerResponse);
+  RegisterState(this.registerResponse);
 }
 
 class ErrorRegistroState extends UserState{
   RegisterResponse registerResponse;
 
   ErrorRegistroState(this.registerResponse);
+}
+
+
+
+class LoadingUpdateProfileState extends UserState{
+  LoadingUpdateProfileState();
+}
+
+class ProfileUpdatedState extends UserState{
+  PerfilResponse perfilResponse;
+
+  ProfileUpdatedState(this.perfilResponse);
+}
+
+class ProfileErrorUpdatedState extends UserState{
+  PerfilResponse perfilResponse;
+
+  ProfileErrorUpdatedState(this.perfilResponse);
 }

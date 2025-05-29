@@ -12,6 +12,12 @@ class RegisterEvent extends UserEvent{
   RegisterEvent(this.registro);
 }
 
+class UpdateProfileEvent extends UserEvent{
+  PerfilEnviar perfilEnviar;
+  UpdateProfileEvent(this.perfilEnviar);
+}
+
+
 
 
 

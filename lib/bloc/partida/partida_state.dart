@@ -81,6 +81,12 @@ class JugarCartaLoadedState extends PartidaState {
   JugarCartaLoadedState(this.repuestaJugada);
 }
 
+
+class GanadorCotoState extends PartidaState {
+  final InformacionCoto infoCoto;
+  GanadorCotoState(this.infoCoto);
+}
+
 class JugarCartaLoadingState extends PartidaState {
   final JugarCartaResponse repuestaJugada;
   JugarCartaLoadingState(this.repuestaJugada);

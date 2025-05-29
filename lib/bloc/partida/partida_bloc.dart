@@ -96,12 +96,21 @@ class PartidaBloc extends Bloc<PartidaEvent, PartidaState> {
         // emit(BuscadorLoadingState(response));
       }
     });
-    on<JugarCartaEvent>((event, emit) async{
+    on<JugarCartaEvent>((event, emit) async {
       emit(EsperandoRespuestaState());
+
       final response = await _jugarManoUseCase!.postJugarCarta(event.cartaJugada);
+
       if (response!.success) {
         emit(JugarCartaLoadedState(response));
-      }else{
+
+        if (response.infoGanador.informacionCoto.success) {
+          await Future.delayed(Duration(seconds: 2));
+          if (!emit.isDone) {
+            emit(GanadorCotoState(response.infoGanador.informacionCoto));
+          }
+        }
+      } else {
         emit(JugarCartaLoadingState(response));
       }
     });

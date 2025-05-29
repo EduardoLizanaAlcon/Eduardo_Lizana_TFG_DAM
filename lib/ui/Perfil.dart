@@ -1,37 +1,53 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injector/injector.dart';
 import 'package:tfg_ginyote/domain/user/User.dart';
-import 'package:tfg_ginyote/ui/PaginaInicio.dart';
+import 'package:tfg_ginyote/util/UsuarioDatos.dart';
 import '../bloc/user/user_bloc.dart';
-import '../components/generics/BotonInicioSesion.dart';
-import '../components/generics/ContenedorLoginCard.dart';
-import '../util/UsuarioDatos.dart';
+import '../components/generics/BotonActualizar.dart';
+import '../components/generics/ContenedorPerfilCard.dart';
 
-class PefilScreen extends StatefulWidget {
+class EditProfileScreen extends StatefulWidget {
   @override
-  _PefilScreenState createState() => _PefilScreenState();
+  _EditProfileScreenState createState() => _EditProfileScreenState();
 }
 
-class _PefilScreenState extends State<PefilScreen> {
+class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController usrController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController nombreController = TextEditingController();
+  final TextEditingController apellidoController = TextEditingController();
+  final TextEditingController telefonoController = TextEditingController();
   final UserBloc userBloc = Injector.appInstance.get<UserBloc>();
   bool isLoading = false;
 
   Map<String, List<String>?> fieldErrors = {};
 
+  void showSnackBar(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : Colors.green,
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final usu = UsuarioDatos.getUsuario();
+    setState(() {
+      usrController.text = usu.usuario;
+      nombreController.text = usu.nombre;
+      apellidoController.text = usu.apellido;
+      telefonoController.text = "${usu.numTel}";
+    });
     return Scaffold(
       backgroundColor: Colors.white,
       body: BlocProvider<UserBloc>(
         create: (_) => userBloc,
         child: BlocListener<UserBloc, UserState>(
           listener: (context, state) {
-            if (state is LoadingLoginState) {
+            if (state is LoadingUpdateProfileState) {
               setState(() {
                 isLoading = true;
               });
@@ -40,18 +56,13 @@ class _PefilScreenState extends State<PefilScreen> {
                 isLoading = false;
               });
             }
-
-            if (state is ErrorLoginState) {
-              print("Login error");
-            } else if (state is LoginState) {
-              UsuarioDatos.setUsuario(state.loginResponse.usuario!);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Paginainicio()),
-              );
+            if (state is ErrorState) {
+              showSnackBar("Actualización fallida", isError: true);
+            } else if (state is ProfileUpdatedState) {
+              showSnackBar("Perfil actualizado correctamente");
+              UsuarioDatos.setUsuario(state.perfilResponse.usuario!);
             }
           },
-
           child: Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -59,14 +70,21 @@ class _PefilScreenState extends State<PefilScreen> {
                 alignment: Alignment.bottomCenter,
                 clipBehavior: Clip.none,
                 children: [
-                  Contenedorlogincard().getCard_Login(
+                  ContenedorPerfilCard().getCard_Perfil(
                     context,
                     usrController,
-                    passwordController,
+                    nombreController,
+                    apellidoController,
+                    telefonoController,
                     fieldErrors,
                   ),
-                  Botoniniciosesion().getBotoniniciosesion(
-                    fieldErrors, userBloc, usrController, passwordController,
+                  BotonActualizar().getBotonActualizar(
+                    fieldErrors,
+                    userBloc,
+                    usrController,
+                    nombreController,
+                    apellidoController,
+                    telefonoController,
                   ),
                   if (isLoading)
                     Positioned.fill(
@@ -77,7 +95,6 @@ class _PefilScreenState extends State<PefilScreen> {
                     ),
                 ],
               ),
-
             ),
           ),
         ),

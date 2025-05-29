@@ -23,8 +23,6 @@ class PaginaDePartida extends StatefulWidget {
   State<PaginaDePartida> createState() => _PaginaDePartidaState();
 }
 
-// ... (importaciones y definición de clase iguales, no cambiaron)
-
 class _PaginaDePartidaState extends State<PaginaDePartida> {
   final PartidaBloc partidaBloc = Injector.appInstance.get<PartidaBloc>();
   final Usuario usu = UsuarioDatos.getUsuario();
@@ -235,7 +233,7 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
                 final infoGanador = state.repuestaJugada.infoGanador;
                 final infoRonda = state.repuestaJugada.infoRonda;
 
-                if (infoGanador != null && infoGanador.success == true && infoRonda != null) {
+                if (infoGanador.success == true && infoRonda.success == true) {
                   final int? idGanador = infoGanador.ganador;
                   final int miId = usu.id;
                   final bool gane = idGanador == miId;
@@ -254,7 +252,7 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
                               Text('Jugador ${infoRonda.infoJugador1!.id}'),
                               Wrap(
                                 spacing: 8,
-                                children: infoRonda.infoJugador1!.cartas?.cards?.map((c) {
+                                children: infoRonda.infoJugador1!.cartas?.cards.map((c) {
                                   return Image.network(c.image ?? '', height: 60);
                                 }).toList() ??
                                     [],
@@ -265,7 +263,7 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
                               Text('Jugador ${infoRonda.infoJugador2!.id}'),
                               Wrap(
                                 spacing: 8,
-                                children: infoRonda.infoJugador2!.cartas?.cards?.map((c) {
+                                children: infoRonda.infoJugador2!.cartas?.cards.map((c) {
                                   return Image.network(c.image ?? '', height: 60);
                                 }).toList() ??
                                     [],
@@ -351,6 +349,43 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
               }
             },
           ),
+          BlocListener<PartidaBloc, PartidaState>(
+            bloc: partidaBloc,
+            listenWhen: (prev, current) => current is GanadorCotoState,
+            listener: (context, state) {
+              if (state is GanadorCotoState) {
+                // Mostrar AlertDialog
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text('¡Ganador de Coto!'),
+                      content: Text('Se ha detectado un ganador del coto actual.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text('Aceptar'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+
+                // Recargar triunfo
+                partidaBloc.add(verTriunfo(VerTriunfo(idBaraja: widget.idPartida)));
+
+                // Recargar la mano del jugador
+                partidaBloc.add(postVerMano(VerMano(
+                  idBaraja: widget.idPartida,
+                  idJugador: usu.id,
+                )));
+
+                partidaBloc.add(ObtenerSiguienteJugadorEvent(idPartida: widget.idPartida));
+              }
+            },
+          ),
         ],
         child: BlocBuilder<PartidaBloc, PartidaState>(
           bloc: partidaBloc,
@@ -359,7 +394,12 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
 
             return Stack(
               children: [
-                _buildContenidoPartida(state),
+                Column(
+                  children: [
+                    Expanded(child: _buildContenidoPartida(state)),
+                    _buildBotonera(),
+                  ],
+                ),
                 if (cargando)
                   Positioned.fill(
                     child: Container(
@@ -370,12 +410,6 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
               ],
             );
           },
-        ),
-      ),
-      bottomNavigationBar: const BottomAppBar(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Text('Menú inferior', textAlign: TextAlign.center),
         ),
       ),
     );
@@ -407,14 +441,17 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
             children: [
               Align(
                 alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: cartasJugadas
-                      .map((carta) => Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    child: Image.network(carta.image, height: 100),
-                  ))
-                      .toList(),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: cartasJugadas
+                        .map((carta) => Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: Image.network(carta.image, height: 100),
+                    ))
+                        .toList(),
+                  ),
                 ),
               ),
               if (cartaTriunfo != null)
@@ -423,85 +460,6 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
                   right: 16,
                   child: Image.network(cartaTriunfo!.image, height: 80),
                 ),
-              Positioned(
-                bottom: 200,
-                left: 16,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ElevatedButton(
-                      onPressed: (esMiTurno && puedeCantar20 && siguienteJugador != null)
-                          ? () {
-                        partidaBloc.add(Cantar20Event(
-                          idPartida: widget.idPartida,
-                          idJugador: usu.id,
-                        ));
-                      }
-                          : null,
-                      child: const Text("Cantar 20"),
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: (esMiTurno && puedeCantar40 && siguienteJugador != null)
-                          ? () {
-                        partidaBloc.add(Cantar40Event(
-                          idPartida: widget.idPartida,
-                          idJugador: usu.id,
-                        ));
-                      }
-                          : null,
-                      child: const Text("Cantar 40"),
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: (esMiTurno && puedeCambiarTriunfo && siguienteJugador != null)
-                          ? () {
-                        final cartaSeleccionada = misCartas[selectedCardIndices.first];
-                        partidaBloc.add(CambiarTriunfoEvent(
-                          CambiarTriunfo(
-                            idBaraja: widget.idPartida,
-                            idCarta: cartaSeleccionada.code,
-                            idUsuario: usu.id,
-                          ),
-                        ));
-                      }
-                          : null,
-                      child: const Text("Cambiar Triunfo"),
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: (esMiTurno &&
-                          puedeJugarCarta &&
-                          siguienteJugador != null &&
-                          indicesPermitidos.contains(selectedCardIndices.first))
-                          ? () {
-                        final cartaSeleccionada = misCartas[selectedCardIndices.first];
-                        _ultimaCartaJugada = cartaSeleccionada.code;
-
-                        partidaBloc.add(
-                          JugarCartaEvent(
-                            cartaJugada: JugarCarta(
-                              idBaraja: widget.idPartida,
-                              idJugador: usu.id,
-                              carta: cartaSeleccionada.code,
-                              primero: cartasJugadas.isEmpty,
-                              arrastre: arrastre,
-                            ),
-                          ),
-                        );
-
-                        setState(() {
-                          misCartas.removeAt(selectedCardIndices.first);
-                          selectedCardIndices.clear();
-                          esMiTurno = false;
-                        });
-                      }
-                          : null,
-                      child: const Text("Jugar Carta"),
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
         ),
@@ -569,6 +527,92 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildBotonera() {
+    final indicesPermitidos = obtenerIndicesCartasPermitidas();
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            ElevatedButton(
+              onPressed: (esMiTurno &&
+                  puedeJugarCarta &&
+                  siguienteJugador != null &&
+                  indicesPermitidos.contains(selectedCardIndices.first))
+                  ? () {
+                final cartaSeleccionada = misCartas[selectedCardIndices.first];
+                _ultimaCartaJugada = cartaSeleccionada.code;
+
+                setState(() {
+                  cartasJugadas.add(cartaSeleccionada); // <- aquí se añade la carta jugada
+                  misCartas.removeAt(selectedCardIndices.first);
+                  selectedCardIndices.clear();
+                  esMiTurno = false;
+                });
+
+                partidaBloc.add(
+                  JugarCartaEvent(
+                    cartaJugada: JugarCarta(
+                      idBaraja: widget.idPartida,
+                      idJugador: usu.id,
+                      carta: cartaSeleccionada.code,
+                      primero: cartasJugadas.isEmpty,
+                      arrastre: arrastre,
+                    ),
+                  ),
+                );
+              }
+                  : null,
+              child: const Text("Jugar Carta"),
+            ),
+            const SizedBox(width: 10),
+            ElevatedButton(
+              onPressed: (esMiTurno && puedeCantar20 && siguienteJugador != null)
+                  ? () {
+                partidaBloc.add(Cantar20Event(
+                  idPartida: widget.idPartida,
+                  idJugador: usu.id,
+                ));
+              }
+                  : null,
+              child: const Text("Cantar 20"),
+            ),
+            const SizedBox(width: 10),
+            ElevatedButton(
+              onPressed: (esMiTurno && puedeCantar40 && siguienteJugador != null)
+                  ? () {
+                partidaBloc.add(Cantar40Event(
+                  idPartida: widget.idPartida,
+                  idJugador: usu.id,
+                ));
+              }
+                  : null,
+              child: const Text("Cantar 40"),
+            ),
+            const SizedBox(width: 10),
+            ElevatedButton(
+              onPressed: (esMiTurno && puedeCambiarTriunfo && siguienteJugador != null)
+                  ? () {
+                final cartaSeleccionada = misCartas[selectedCardIndices.first];
+                partidaBloc.add(CambiarTriunfoEvent(
+                  CambiarTriunfo(
+                    idBaraja: widget.idPartida,
+                    idCarta: cartaSeleccionada.code,
+                    idUsuario: usu.id,
+                  ),
+                ));
+              }
+                  : null,
+              child: const Text("Cambiar Triunfo"),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

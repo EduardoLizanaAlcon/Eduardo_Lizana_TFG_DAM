@@ -35,12 +35,12 @@ class LoginResponse {
 }
 
 class RegisterResponse {
-  bool? success;
+  bool success;
   String? mensaje;
   Usuario? usuario;
 
   RegisterResponse({
-    this.success,
+    required this.success,
     this.mensaje,
     this.usuario,
   });

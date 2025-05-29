@@ -10,6 +10,8 @@ import 'package:tfg_ginyote/use-cases/partida/CartaJugadaRivalUseCase.dart';
 import 'package:tfg_ginyote/use-cases/partida/SiguienteJugadorUseCase.dart';
 import 'package:tfg_ginyote/use-cases/partida/VerGlobalUserCase.dart';
 import 'package:tfg_ginyote/use-cases/partida/VerManoUserCase.dart';
+import 'package:tfg_ginyote/use-cases/user/PerfilUserCase.dart';
+import 'package:tfg_ginyote/use-cases/user/RegistroUserCase.dart';
 import '../bloc/user/user_bloc.dart';
 import '../data/api-client-http.dart';
 import '../data/api-client-interfaz.dart';
@@ -31,10 +33,18 @@ import '../use-cases/user/LoginUserCase.dart';
 void setupDI() {
   final injector = Injector.appInstance;
 
-  // Registrar dependencias
   injector.registerSingleton<ApiClient>(() => HttpApiClient(http.Client()));
-  injector.registerDependency<UserBloc>(() => UserBloc(injector.get<LoginUseCase>()));
-  injector.registerDependency<HistorialBloc>(() => HistorialBloc(injector.get<ObtenerHistoricoUserCase>()));
+
+  injector.registerDependency<UserBloc>(() => UserBloc(
+      injector.get<LoginUseCase>(),
+      injector.get<RegistroUserCase>(),
+      injector.get<PerfilUserCase>(),
+  ));
+
+  injector.registerDependency<HistorialBloc>(() => HistorialBloc(
+      injector.get<ObtenerHistoricoUserCase>())
+  );
+
   injector.registerDependency<PartidaBloc>(() => PartidaBloc(
       injector.get<BuscarPartidaUserCase>(),
       injector.get<VerManoUserCase>(),
@@ -52,7 +62,10 @@ void setupDI() {
   //inyeccion de login
   injector.registerSingleton<LoginService>(() => LoginService(injector.get<ApiClient>()));
   injector.registerSingleton<LoginRepository>(() => LoginRepository(injector.get<LoginService>()));
+
   injector.registerSingleton<LoginUseCase>(() => LoginUseCase(injector.get<LoginRepository>()));
+  injector.registerSingleton<RegistroUserCase>(() => RegistroUserCase(injector.get<LoginRepository>()));
+  injector.registerSingleton<PerfilUserCase>(() => PerfilUserCase(injector.get<LoginRepository>()));
 
   //inyeccion de historial
   injector.registerSingleton<HistoricoService>(() => HistoricoService(injector.get<ApiClient>()));
