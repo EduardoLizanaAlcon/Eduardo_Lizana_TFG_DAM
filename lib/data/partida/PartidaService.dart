@@ -47,7 +47,6 @@ class PartidaService {
         'Accept': 'application/json',
       };
       final response = await apiClient.post('${Entorno().getEntorno()}PartidaControlador/MirarCartas',  headers, verManoToJson(mano));
-      print("object");
       final l = verManoResponseFromJson(response);
       return l;
 
@@ -136,7 +135,6 @@ class PartidaService {
         headers,
         jugarCartaToJson(cartaJugada),
       );
-      print("a");
       return jugarCartaResponseFromJson(response);
     } catch (e) {
       String response = '{"success":false}';
@@ -182,54 +180,4 @@ class PartidaService {
       return cambiarTriunfoResponseFromJson(response);
     }
   }
-
-  // Future<Map<String, dynamic>?> cantar20({
-  //   required String idPartida,
-  //   required String idJugador,
-  // }) async {
-  //   try {
-  //     final headers = {
-  //       'Content-Type': 'application/json',
-  //       'Accept': 'application/json',
-  //     };
-  //     final body = jsonEncode({
-  //       'id_partida': idPartida,
-  //       'id_jugador': idJugador,
-  //     });
-  //     final response = await apiClient.post(
-  //       '${Entorno().getEntorno()}PartidaControlador/Cantar20',
-  //       headers,
-  //       body,
-  //     );
-  //     return jsonDecode(response);
-  //   } catch (e) {
-  //     print('Error al cantar 20: $e');
-  //     return null;
-  //   }
-  // }
-  //
-  // Future<Map<String, dynamic>?> cantar40({
-  //   required String idPartida,
-  //   required String idJugador,
-  // }) async {
-  //   try {
-  //     final headers = {
-  //       'Content-Type': 'application/json',
-  //       'Accept': 'application/json',
-  //     };
-  //     final body = jsonEncode({
-  //       'id_partida': idPartida,
-  //       'id_jugador': idJugador,
-  //     });
-  //     final response = await apiClient.post(
-  //       '${Entorno().getEntorno()}PartidaControlador/Cantar40',
-  //       headers,
-  //       body,
-  //     );
-  //     return jsonDecode(response);
-  //   } catch (e) {
-  //     print('Error al cantar 40: $e');
-  //     return null;
-  //   }
-  // }
 }
