@@ -235,9 +235,10 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
               if (state is JugarCartaLoadedState) {
                 final infoGanador = state.repuestaJugada.infoGanador;
                 final infoRonda = state.repuestaJugada.infoRonda;
-
-                if (infoGanador.success == true && infoRonda.success == true) {
-                  final int? idGanador = infoGanador.ganador;
+                print("infoRonda?.success ${infoRonda?.success}");
+                print("infoGanador?.success ${infoGanador?.success}");
+                if (infoGanador?.success == true && infoRonda?.success == true) {
+                  final int? idGanador = infoGanador?.ganador;
                   final int miId = usu.id;
                   final bool gane = idGanador == miId;
 
@@ -251,25 +252,23 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
                           children: [
                             const Text('Cartas jugadas:'),
                             const SizedBox(height: 10),
-                            if (infoRonda.infoJugador1 != null) ...[
-                              Text('Jugador ${infoRonda.infoJugador1!.id}'),
+                            if (infoRonda?.infoJugador1 != null) ...[
+                              Text('Jugador ${infoRonda?.infoJugador1!.id}'),
                               Wrap(
                                 spacing: 8,
-                                children: infoRonda.infoJugador1!.cartas?.cards.map((c) {
+                                children: infoRonda?.infoJugador1!.cartas?.cards?.map((c) {
                                   return Image.network(c.image ?? '', height: 60);
-                                }).toList() ??
-                                    [],
+                                }).toList() ?? [],
                               ),
                               const SizedBox(height: 10),
                             ],
-                            if (infoRonda.infoJugador2 != null) ...[
-                              Text('Jugador ${infoRonda.infoJugador2!.id}'),
+                            if (infoRonda?.infoJugador2 != null) ...[
+                              Text('Jugador ${infoRonda?.infoJugador2!.id}'),
                               Wrap(
                                 spacing: 8,
-                                children: infoRonda.infoJugador2!.cartas?.cards.map((c) {
+                                children: infoRonda?.infoJugador2!.cartas?.cards?.map((c) {
                                   return Image.network(c.image ?? '', height: 60);
-                                }).toList() ??
-                                    [],
+                                }).toList() ?? [],
                               ),
                             ],
                           ],
@@ -278,14 +277,93 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
                           TextButton(
                             onPressed: () {
                               Navigator.pop(context);
-                              partidaBloc.add(postVerMano(VerMano(
-                                idBaraja: widget.idPartida,
-                                idJugador: usu.id,
-                              )));
-                              partidaBloc.add(ObtenerSiguienteJugadorEvent(idPartida: widget.idPartida));
-                              setState(() {
-                                cartasJugadas.clear();
-                              });
+
+                              // Verificamos informacion_coto
+                              final coto = infoGanador?.informacionCoto;
+                              if (coto != null && coto.success == true) {
+                                final puntos1 = coto.puntosEquipo1;
+                                final puntos2 = coto.puntosEquipo2;
+                                final ganadorCoto = puntos1! > puntos2! ? 'Equipo 1' : 'Equipo 2';
+
+                                showDialog(
+                                  context: context,
+                                  builder: (_) {
+                                    return AlertDialog(
+                                      title: const Text('Resultado del Coto'),
+                                      content: Text('El $ganadorCoto lleva más puntos: $puntos1 - $puntos2'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+
+                                            // Verificamos informacion_partida
+                                            final partida = infoGanador?.informacionPartida;
+                                            if (partida != null && partida.success == true && partida.finalizada == true) {
+                                              // Limpiamos la pantalla y mostramos ganador
+                                              setState(() {
+                                                misCartas.clear();
+                                                cartasJugadas.clear();
+                                                selectedCardIndices.clear();
+                                                cartaTriunfo = null;
+                                                siguienteJugador = null;
+                                                esMiTurno = false;
+                                              });
+
+                                              showDialog(
+                                                context: context,
+                                                barrierDismissible: false,
+                                                builder: (_) => Center(
+                                                  child: Column(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: [
+                                                      const CircularProgressIndicator(),
+                                                      const SizedBox(height: 20),
+                                                      Text(
+                                                        '🏆 ¡Ganador final!\nJugador ${partida.ganador}',
+                                                        textAlign: TextAlign.center,
+                                                        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                                                      ),
+                                                      const SizedBox(height: 20),
+                                                      ElevatedButton(
+                                                        onPressed: () {
+                                                          Navigator.of(context).pop();
+                                                          Navigator.of(context).pop(); // Volver a pantalla anterior
+                                                        },
+                                                        child: const Text('Salir'),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              );
+                                            } else {
+                                              // Si no terminó la partida, continuar normalmente
+                                              partidaBloc.add(postVerMano(VerMano(
+                                                idBaraja: widget.idPartida,
+                                                idJugador: usu.id,
+                                              )));
+                                              partidaBloc.add(ObtenerSiguienteJugadorEvent(idPartida: widget.idPartida));
+                                              setState(() {
+                                                cartasJugadas.clear();
+                                              });
+                                            }
+                                          },
+                                          child: const Text('Continuar'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              } else {
+                                // Si no hay informacion_coto, continuar normalmente
+                                partidaBloc.add(postVerMano(VerMano(
+                                  idBaraja: widget.idPartida,
+                                  idJugador: usu.id,
+                                )));
+                                partidaBloc.add(ObtenerSiguienteJugadorEvent(idPartida: widget.idPartida));
+                                setState(() {
+                                  cartasJugadas.clear();
+                                });
+                              }
                             },
                             child: const Text('Continuar'),
                           ),
@@ -307,6 +385,8 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
                 final response = state.comprobarRondaResponse;
 
                 if (response.success) {
+                  _timerGanador?.cancel();
+
                   // Mostrar ganador de jugada
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -315,11 +395,12 @@ class _PaginaDePartidaState extends State<PaginaDePartida> {
                     ),
                   ).closed.then((_) {
                     if (response.ganadorSet != null) {
-                      // Mostrar ganador de set
+                      // Mostrar ganador de set + puntos
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('¡Ganador del set: Jugador ${response.ganadorSet}!'),
-                          duration: const Duration(seconds: 2),
+                          content: Text('¡Ganador del set: Jugador ${response.ganadorSet}!\n'
+                              'Puntos: Equipo1 ${response.puntosEquipo1} - Equipo2 ${response.puntosEquipo2}'),
+                          duration: const Duration(seconds: 3),
                         ),
                       ).closed.then((_) {
                         if (response.ganadorPartida == null) {

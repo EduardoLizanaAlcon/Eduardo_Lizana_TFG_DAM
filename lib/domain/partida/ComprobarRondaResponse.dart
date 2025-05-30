@@ -12,12 +12,16 @@ class ComprobarRondaResponse {
   bool success;
   int? ganadorJugada;
   int? ganadorSet;
+  int? puntosEquipo1;
+  int? puntosEquipo2;
   int? ganadorPartida;
 
   ComprobarRondaResponse({
     required this.success,
     this.ganadorJugada,
     this.ganadorSet,
+    this.puntosEquipo1,
+    this.puntosEquipo2,
     this.ganadorPartida,
   });
 
@@ -25,6 +29,8 @@ class ComprobarRondaResponse {
     success: json["success"],
     ganadorJugada: json["ganador_jugada"],
     ganadorSet: json["ganador_set"],
+    puntosEquipo1: json["puntos_equipo1"],
+    puntosEquipo2: json["puntos_equipo2"],
     ganadorPartida: json["ganador_partida"],
   );
 
@@ -32,6 +38,8 @@ class ComprobarRondaResponse {
     "success": success,
     "ganador_jugada": ganadorJugada,
     "ganador_set": ganadorSet,
+    "puntos_equipo1": puntosEquipo1,
+    "puntos_equipo2": puntosEquipo2,
     "ganador_partida": ganadorPartida,
   };
 }

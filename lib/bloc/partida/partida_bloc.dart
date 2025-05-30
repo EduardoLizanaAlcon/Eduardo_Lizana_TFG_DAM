@@ -104,13 +104,6 @@ class PartidaBloc extends Bloc<PartidaEvent, PartidaState> {
 
       if (response!.success) {
         emit(JugarCartaLoadedState(response));
-
-        if (response.infoGanador.informacionCoto.success) {
-          await Future.delayed(Duration(seconds: 2));
-          if (!emit.isDone) {
-            emit(GanadorCotoState(response.infoGanador.informacionCoto));
-          }
-        }
       } else {
         emit(JugarCartaLoadingState(response));
       }

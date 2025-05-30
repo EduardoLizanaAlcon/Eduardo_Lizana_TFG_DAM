@@ -136,6 +136,7 @@ class PartidaService {
         headers,
         jugarCartaToJson(cartaJugada),
       );
+      print("a");
       return jugarCartaResponseFromJson(response);
     } catch (e) {
       String response = '{"success":false}';
@@ -155,6 +156,7 @@ class PartidaService {
         headers,
         comprobarRondaToJson(compRonda),
       );
+      print("a");
       return comprobarRondaResponseFromJson(response);
     } catch (e) {
       String response = '{"success":false}';
